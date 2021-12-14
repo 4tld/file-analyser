@@ -1,0 +1,16 @@
+body {
+  background-color: black;
+  color: white;
+}
+.bordered {
+  border: solid 1px;
+}
+
+.flex {
+  display: flex;
+}
+
+.error {
+  background-color: red;
+  color: black;
+}

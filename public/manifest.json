@@ -1,0 +1,17 @@
+{
+  "short_name": "4TFA",
+  "name": "Foretold File Analysis",
+  "description": "Foretold File Analysis.",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "type": "image/x-icon",
+      "sizes": "16x16 24x24 32x32 48x48 64x64 96x96 128x128 256x256"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "black",
+  "display": "fullscreen",
+  "scope": "/",
+  "theme_color": "#f80"
+}
