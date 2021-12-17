@@ -10,6 +10,17 @@
     >
       Analyse block
     </button>
+    <button
+      type="button"
+      @click="showContent = !showContent"
+    >
+      {{ showContent ? 'Hide' : 'Show' }}
+    </button>
+    <textarea
+      v-if="showContent"
+      :value="block.contents"
+      readonly
+    />
   </div>
 </template>
 
@@ -20,5 +31,11 @@ export default {
   },
 
   emits: ['analyse'],
+
+  data () {
+    return {
+      showContent: false,
+    }
+  },
 }
 </script>

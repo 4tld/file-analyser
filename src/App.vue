@@ -1,5 +1,5 @@
 <template>
-  <Main />
+  <RouterView />
   <div
     v-if="error"
     class="bordered error"
@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import Main from './components/Main'
+import { RouterView } from 'vue-router'
 
 export default {
   components: {
-    Main,
+    RouterView,
   },
 
   data () {

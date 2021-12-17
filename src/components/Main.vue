@@ -83,6 +83,10 @@ export default {
     load ({ target: { files } }) {
       this.loading = true
 
+      this.hexDump = ''
+      this.fileString = ''
+      this.blocks = []
+
       this.fileInfos = {
         set: true,
         name: files[0].name,
@@ -118,38 +122,45 @@ export default {
       let blocksToAnalyse = [block]
       for (const blockInfo of this.blockInfos) {
         const newBTA = blocksToAnalyse
-        for (const blockToAnalyse of blocksToAnalyse) {
-          const index = blockToAnalyse.contents.indexOf(blockInfo.pattern)
-          if (index >= 0) {
-            newBlock.push({
-              start: index + blockToAnalyse.start,
-              type: blockInfo.name,
-              analysed: true,
-              contents: blockToAnalyse.contents.slice(index, index + blockInfo.pattern.length),
-            })
-            const leftBlock = {
-              start: blockToAnalyse.start,
-              type: 'binary',
-              analysed: false,
-              contents: blockToAnalyse.contents.slice(0, index),
+        let continueAnalyse = true
+        while (continueAnalyse) {
+          continueAnalyse = false
+          for (const blockToAnalyse of blocksToAnalyse) {
+            const match = blockToAnalyse.contents.match(blockInfo.pattern)
+            const index = match?.index
+            if (index >= 0) {
+              continueAnalyse = true
+              newBlock.push({
+                start: index + blockToAnalyse.start,
+                type: blockInfo.name,
+                analysed: true,
+                contents: blockToAnalyse.contents.slice(index, index + blockInfo.length),
+              })
+              const leftBlock = {
+                start: blockToAnalyse.start,
+                type: 'binary',
+                analysed: false,
+                contents: blockToAnalyse.contents.slice(0, index),
+              }
+              const rightBlock = {
+                start: blockToAnalyse.start + index + blockInfo.length,
+                type: 'binary',
+                analysed: false,
+                contents: blockToAnalyse.contents.slice(index + blockInfo.length),
+              }
+
+              const blocksToPush = []
+              if (leftBlock.contents.length) {
+                blocksToPush.push(leftBlock)
+              }
+              if (rightBlock.contents.length) {
+                blocksToPush.push(rightBlock)
+              }
+              newBTA.splice(newBTA.findIndex((el) => blockToAnalyse === el), 1, ...blocksToPush)
             }
-            const rightBlock = {
-              start: index + blockInfo.pattern.length,
-              type: 'binary',
-              analysed: false,
-              contents: blockToAnalyse.contents.slice(index + blockInfo.pattern.length),
-            }
-            const blocksToPush = []
-            if (leftBlock.contents.length) {
-              blocksToPush.push(leftBlock)
-            }
-            if (rightBlock.contents.length) {
-              blocksToPush.push(rightBlock)
-            }
-            newBTA.splice(newBTA.findIndex((el) => blockToAnalyse === el), 1, ...blocksToPush)
           }
+          blocksToAnalyse = newBTA
         }
-        blocksToAnalyse = newBTA
       }
       if (newBlock.length) {
         const blocksToSplice = [ ...newBlock, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
