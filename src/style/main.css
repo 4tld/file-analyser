@@ -10,7 +10,15 @@ body {
   display: flex;
 }
 
+.flex--align-right {
+  margin-left: auto;
+}
+
 .error {
   background-color: red;
   color: black;
+}
+
+.width-50 {
+  width: 50%
 }
