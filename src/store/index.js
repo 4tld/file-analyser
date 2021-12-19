@@ -10,9 +10,5 @@ export const store = createStore({
     ],
   },
   mutations: {},
-  actions: {
-    COMMIT_MUTATION ({ commit }, { mutation, params }) {
-      commit(mutation, params)
-    },
-  },
+  actions: {},
 })
