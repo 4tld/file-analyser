@@ -1,9 +1,18 @@
 import { littleEndian32StringToNumber } from '../util/converters'
 
+const riffMainChunks = 'RIFF|LIST|JUNK|DISP|PAD |PEAK'
+const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext'
+const riffWaveMetadata = 'INAM|IPRD|IART|ICRD|ITRK|ICMT|IKEY|ISFT|IENG|ITCH|IGNR|ICOP|ISBJ|ISRC'
+const riffTypes = `${riffMainChunks}|${riffSubChunks}|${riffWaveMetadata}`
+
+const riffFileTypes = 'ACON|AVI |CDDA|CPPO|PAL |QLCM|RDIB|RMID|RMMP|WAVE'
+const riffListTypes = 'INFO|wvpl|wave|lins|ins |lrgn|movi|rec |rgn |rgn2|lart|lar2|adtl'
+const riffFormats = `${riffFileTypes}|${riffListTypes}`
+
 export default [
   {
     name: 'RIFF Chunk',
-    pattern: /(?<type>RIFF|fmt |data|fact|LIST)(?<length>.{4})(?<format>ACON|AVI |CDDA|CPPO|PAL |QLCM|RDIB|RMID|RMMP|WAVE|INFO|wvpl|wave|lins|ins |lrgn|rgn |rgn2|lart|lar2)?/su,
+    pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
     createBlock: (match) => {
       const dataLength = littleEndian32StringToNumber(match.groups.length)
       const subBlocks = [

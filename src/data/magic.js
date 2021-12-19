@@ -6,6 +6,11 @@ export default [
     pattern: /8BPS/su,
   },
   {
+    name: 'SWF magic number',
+    type: 'fixed',
+    pattern: /CWS|FWS|ZWS/su,
+  },
+  {
     name: 'Dalvik executable magic number',
     type: 'fixed',
     pattern: /dex\n035\x00/su,
@@ -16,6 +21,11 @@ export default [
     createBlock: (match) => ({
       name: `GIF version ${match.groups.version} magic number`,
     }),
+  },
+  {
+    name: 'XCF magic number',
+    type: 'fixed',
+    pattern: /gimp xcf /su,
   },
   {
     name: 'ID3 container header',
@@ -30,7 +40,7 @@ export default [
   {
     name: 'DOS MZ executable magic number',
     type: 'fixed',
-    pattern: /MZ/su,
+    pattern: /^MZ/su,
   },
   {
     name: 'PDF magic number',
