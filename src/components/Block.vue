@@ -3,7 +3,10 @@
     class="bordered"
   >
     <div class="flex width-50">
-      {{ block.start }} - {{ block.start + block.contents.length - 1 }} : {{ block.type }}
+      <div class="block-start-end bordered">
+        {{ block.start }} <br /> {{ block.start + block.contents.length - 1 }}
+      </div>
+      {{ block.type }}
       <div class="flex--align-right">
         <button
           v-if="!block.analysed"
@@ -24,6 +27,13 @@
         >
           {{ showHex ? 'Hide hex' : 'Show hex' }}
         </button>
+        <button
+          v-if="block.subBlocks?.length"
+          type="button"
+          @click="showSubBlocks = !showSubBlocks"
+        >
+          {{ showSubBlocks ? 'Hide sub blocks' : 'Show sub blocks' }}
+        </button>
       </div>
     </div>
     <div class="flex">
@@ -38,7 +48,10 @@
         readonly
       />
     </div>
-    <div class="subblocks">
+    <div
+      v-if="showSubBlocks"
+      class="subblocks"
+    >
       <Block
         v-for="(subBlock, index) in block.subBlocks"
         :key="index"
@@ -64,6 +77,7 @@ export default {
     return {
       showText: false,
       showHex: false,
+      showSubBlocks: false,
     }
   },
 
