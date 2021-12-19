@@ -43,8 +43,9 @@
   <Block
     v-for="(block, index) in blocks"
     :key="index"
+    :index="index"
     :block="block"
-    @analyse="analyseBlock"
+    @update-blocks="updateBlocks"
   />
 </template>
 
@@ -117,67 +118,8 @@ export default {
       ]
     },
 
-    analyseBlock (block) {
-      this.loading = true
-      const newBlock = []
-      let blocksToAnalyse = [block]
-      for (const blockInfo of this.blockInfos) {
-        const newBTA = blocksToAnalyse
-        let continueAnalyse = true
-        while (continueAnalyse) {
-          continueAnalyse = false
-          for (const blockToAnalyse of blocksToAnalyse) {
-            const match = blockToAnalyse.contents.match(blockInfo.pattern)
-            if (match) {
-              let theBlock = {}
-              if (blockInfo.createBlock) {
-                theBlock = blockInfo.createBlock(match)
-              }
-              const { index: matchIndex } = match
-              const matchLength = match[0]?.length
-              continueAnalyse = true
-              const contents = theBlock.contents || blockToAnalyse.contents.slice(matchIndex, matchIndex + matchLength)
-              newBlock.push({
-                start: matchIndex + blockToAnalyse.start,
-                name: blockInfo.name,
-                type: blockInfo.type || 'unknown',
-                analysed: true,
-                contents,
-                ...theBlock,
-              })
-              const leftBlock = {
-                start: blockToAnalyse.start,
-                name: 'unknown',
-                type: 'unknown',
-                analysed: false,
-                contents: blockToAnalyse.contents.slice(0, matchIndex),
-              }
-              const rightBlock = {
-                start: blockToAnalyse.start + matchIndex + contents.length,
-                name: 'unknown',
-                type: 'unknown',
-                analysed: false,
-                contents: blockToAnalyse.contents.slice(matchIndex + contents.length),
-              }
-
-              const blocksToPush = []
-              if (leftBlock.contents.length) {
-                blocksToPush.push(leftBlock)
-              }
-              if (rightBlock.contents.length) {
-                blocksToPush.push(rightBlock)
-              }
-              newBTA.splice(newBTA.findIndex((el) => blockToAnalyse === el), 1, ...blocksToPush)
-            }
-          }
-          blocksToAnalyse = newBTA
-        }
-      }
-      if (newBlock.length) {
-        const blocksToSplice = [ ...newBlock, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
-        this.blocks.splice(this.blocks.findIndex((el) => block === el), 1, ...blocksToSplice)
-      }
-      this.loading = false
+    updateBlocks (blocksToSplice, index) {
+      this.blocks.splice(index, 1, ...blocksToSplice)
     },
   },
 }

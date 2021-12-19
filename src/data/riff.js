@@ -3,7 +3,7 @@ import { littleEndian32StringToNumber } from '../util/converters'
 export default [
   {
     name: 'RIFF Chunk',
-    pattern: /(?<type>RIFF|fmt |data|LIST)(?<length>.{4})(?<format>ACON|AVI |CDDA|CPPO|PAL |QLCM|RDIB|RMID|RMMP|WAVE|INFO|wvpl|wave|lins|ins |lrgn|rgn |rgn2|lart|lar2)?/su,
+    pattern: /(?<type>RIFF|fmt |data|fact|LIST)(?<length>.{4})(?<format>ACON|AVI |CDDA|CPPO|PAL |QLCM|RDIB|RMID|RMMP|WAVE|INFO|wvpl|wave|lins|ins |lrgn|rgn |rgn2|lart|lar2)?/su,
     createBlock: (match) => {
       const dataLength = littleEndian32StringToNumber(match.groups.length)
       const subBlocks = [
@@ -42,7 +42,7 @@ export default [
         })
       }
       return {
-        name: `${match.groups.format} ${match.groups.type} container`,
+        name: `${match.groups.format || ''} ${match.groups.type} container`,
         type: 'chunk',
         contents: match.input.slice(match.index, match.index + 8 + dataLength),
         subBlocks,
