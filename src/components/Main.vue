@@ -127,26 +127,33 @@ export default {
           continueAnalyse = false
           for (const blockToAnalyse of blocksToAnalyse) {
             const match = blockToAnalyse.contents.match(blockInfo.pattern)
-            const index = match?.index
-            if (index >= 0) {
+            if (match) {
+              let theBlock = {}
+              if (blockInfo.createBlock) {
+                theBlock = blockInfo.createBlock(match)
+              }
+              const { index: matchIndex } = match
+              const matchLength = match[0]?.length
               continueAnalyse = true
+              const contents = theBlock.contents || blockToAnalyse.contents.slice(matchIndex, matchIndex + matchLength)
               newBlock.push({
-                start: index + blockToAnalyse.start,
+                start: matchIndex + blockToAnalyse.start,
                 type: blockInfo.name,
                 analysed: true,
-                contents: blockToAnalyse.contents.slice(index, index + blockInfo.length),
+                contents,
+                ...theBlock,
               })
               const leftBlock = {
                 start: blockToAnalyse.start,
                 type: 'binary',
                 analysed: false,
-                contents: blockToAnalyse.contents.slice(0, index),
+                contents: blockToAnalyse.contents.slice(0, matchIndex),
               }
               const rightBlock = {
-                start: blockToAnalyse.start + index + blockInfo.length,
+                start: blockToAnalyse.start + matchIndex + contents.length,
                 type: 'binary',
                 analysed: false,
-                contents: blockToAnalyse.contents.slice(index + blockInfo.length),
+                contents: blockToAnalyse.contents.slice(matchIndex + contents.length),
               }
 
               const blocksToPush = []

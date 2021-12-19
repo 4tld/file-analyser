@@ -22,3 +22,7 @@ body {
 .width-50 {
   width: 50%
 }
+
+.subblocks {
+  margin-inline-start: 10px;
+}

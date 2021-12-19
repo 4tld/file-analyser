@@ -3,7 +3,7 @@
     class="bordered"
   >
     <div class="flex width-50">
-      {{ block.start }} : {{ block.type }}
+      {{ block.start }} - {{ block.start + block.contents.length - 1 }} : {{ block.type }}
       <div class="flex--align-right">
         <button
           v-if="!block.analysed"
@@ -38,6 +38,13 @@
         readonly
       />
     </div>
+    <div class="subblocks">
+      <Block
+        v-for="(subBlock, index) in block.subBlocks"
+        :key="index"
+        :block="subBlock"
+      />
+    </div>
   </div>
 </template>
 
@@ -45,6 +52,8 @@
 import { stringToHexString } from '../util/converters'
 
 export default {
+  name: 'Block',
+
   props: {
     block: Object,
   },

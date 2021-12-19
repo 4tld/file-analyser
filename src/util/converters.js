@@ -12,3 +12,11 @@ export function stringToHexString (string) {
   }
   return hex
 }
+
+export function bigEndianstringToNumber (string) {
+  let number = 0;
+  [...string].forEach((char, index) => {
+    number += char.charCodeAt() * 256 ** (3 - index)
+  })
+  return number
+}
