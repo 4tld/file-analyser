@@ -1,4 +1,4 @@
-import { bigEndianStringToNumber } from '../util/converters'
+import { bigEndian32StringToNumber } from '../util/converters'
 
 const pngChunkDescriptions = {
   IHDR: 'Image header',
@@ -33,7 +33,7 @@ export default [
     name: 'PNG Chunk',
     pattern: /(?<length>.{4})(?<type>IHDR|PLTE|IDAT|IEND|tRNS|cHRM|gAMA|iCCP|sBIT|sRGB|tEXt|zTXt|iTXt|bKGD|hIST|pHYs|sPLT|tIME|dSIG|sTER|eXIf)/su,
     createBlock: (match) => {
-      const dataLength = bigEndianStringToNumber(match.groups.length)
+      const dataLength = bigEndian32StringToNumber(match.groups.length)
       const subBlocks = [
         {
           start: match.index,

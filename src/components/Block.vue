@@ -6,7 +6,7 @@
       <div class="block-start-end bordered">
         {{ block.start }} <br /> {{ block.start + block.contents.length - 1 }}
       </div>
-      {{ block.type }}
+      {{ block.name }}
       <div class="flex--align-right">
         <button
           v-if="!block.analysed"
