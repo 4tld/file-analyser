@@ -109,7 +109,8 @@ export default {
       this.blocks = [
         {
           start: 0,
-          name: 'binary',
+          name: 'unknown',
+          type: 'unknown',
           analysed: false,
           contents: this.fileString,
         },
@@ -139,19 +140,22 @@ export default {
               newBlock.push({
                 start: matchIndex + blockToAnalyse.start,
                 name: blockInfo.name,
+                type: blockInfo.type || 'unknown',
                 analysed: true,
                 contents,
                 ...theBlock,
               })
               const leftBlock = {
                 start: blockToAnalyse.start,
-                name: 'binary',
+                name: 'unknown',
+                type: 'unknown',
                 analysed: false,
                 contents: blockToAnalyse.contents.slice(0, matchIndex),
               }
               const rightBlock = {
                 start: blockToAnalyse.start + matchIndex + contents.length,
-                name: 'binary',
+                name: 'unknown',
+                type: 'unknown',
                 analysed: false,
                 contents: blockToAnalyse.contents.slice(matchIndex + contents.length),
               }

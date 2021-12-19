@@ -27,6 +27,7 @@ const pngChunkDescriptions = {
 export default [
   {
     name: 'PNG Magic Number',
+    type: 'fixed',
     pattern: /\x89PNG\r\n\x1A\n/su,
   },
   {
@@ -37,19 +38,22 @@ export default [
       const subBlocks = [
         {
           start: match.index,
-          type: 'chunk length',
+          name: 'chunk length',
+          type: 'intbe32',
           analysed: true,
           contents: match.groups.length,
         },
         {
           start: match.index + 4,
-          type: 'chunk type',
+          name: 'chunk type',
+          type: 'ascii',
           analysed: true,
           contents: match.groups.type,
         },
         {
           start: match.index + 8 + dataLength,
-          type: 'chunk CRC',
+          name: 'chunk CRC',
+          type: 'binary',
           analysed: true,
           contents: match.input.slice(match.index + 8 + dataLength, match.index + 8 + dataLength + 4),
         },
@@ -57,13 +61,15 @@ export default [
       if (dataLength > 0) {
         subBlocks.splice(2, 0, {
           start: match.index + 8,
-          type: 'chunk data',
+          name: 'chunk data',
+          type: 'unknown',
           analysed: false,
           contents: match.input.slice(match.index + 8, match.index + 8 + dataLength),
         })
       }
       return {
-        type: `PNG ${pngChunkDescriptions[match.groups.type] || `${match.groups.type} Chunk`}`,
+        name: `PNG ${pngChunkDescriptions[match.groups.type] || `${match.groups.type} Chunk`}`,
+        type: 'chunk',
         contents: match.input.slice(match.index, match.index + 8 + dataLength + 4),
         subBlocks,
       }

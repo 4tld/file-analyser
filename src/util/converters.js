@@ -5,10 +5,10 @@ export function uint8ToHexString (uint8) {
   uint8.reduce((acc, byte) => acc + (0 + byte.toString(16)).slice(-2), '')
 }
 
-export function stringToHexString (string) {
-  let hex = ''
+export function stringToHexArray (string) {
+  const hex = []
   for (const char of string) {
-    hex += `${(0 + char.charCodeAt().toString(16)).slice(-2)}.`
+    hex.push((0 + char.charCodeAt().toString(16)).slice(-2))
   }
   return hex
 }

@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { stringToHexString } from '../util/converters'
+import { stringToHexArray } from '../util/converters'
 
 export default {
   name: 'Block',
@@ -83,7 +83,7 @@ export default {
 
   computed: {
     blockHex () {
-      return stringToHexString(this.block.contents)
+      return stringToHexArray(this.block.contents).join('.')
     },
   },
 }
