@@ -13,10 +13,18 @@ export function stringToHexString (string) {
   return hex
 }
 
-export function bigEndianstringToNumber (string) {
+export function bigEndianStringToNumber (string) {
   let number = 0;
   [...string].forEach((char, index) => {
-    number += char.charCodeAt() * 256 ** (3 - index)
+    number += char.charCodeAt() * 256 ** (string.length - 1 - index)
+  })
+  return number
+}
+
+export function littleEndianStringToNumber (string) {
+  let number = 0;
+  [...string].forEach((char, index) => {
+    number += char.charCodeAt() * 256 ** index
   })
   return number
 }
