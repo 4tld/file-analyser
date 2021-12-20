@@ -7,13 +7,13 @@
         {{ block.start }} <br /> {{ block.start + block.contents.length - 1 }}
       </div>
       <div>
-        {{ block.name }} ({{ block.contents.length }})<br />
         <div v-if="block.type === 'intbe32'">
-          Content: {{ intbe32 }}
+          {{ intbe32 }}<br />
         </div>
         <div v-if="block.type === 'intle32'">
-          Content: {{ intle32 }}
+          {{ intle32 }}<br />
         </div>
+        {{ block.name }} ({{ block.contents.length }})
       </div>
       <div class="flex--align-right">
         <button

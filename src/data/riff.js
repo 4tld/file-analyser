@@ -1,7 +1,7 @@
 import { littleEndian32StringToNumber } from '../util/converters'
 
 const riffMainChunks = 'RIFF|LIST|JUNK|DISP|PAD |PEAK'
-const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext'
+const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext|id3 '
 const riffWaveMetadata = 'INAM|IPRD|IART|ICRD|ITRK|ICMT|IKEY|ISFT|IENG|ITCH|IGNR|ICOP|ISBJ|ISRC'
 const riffTypes = `${riffMainChunks}|${riffSubChunks}|${riffWaveMetadata}`
 

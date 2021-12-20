@@ -28,7 +28,7 @@ export default [
     pattern: /gimp xcf /su,
   },
   {
-    name: 'ID3 container header',
+    name: 'ID3v2 container header',
     type: 'fixed',
     pattern: /ID3/su,
   },
