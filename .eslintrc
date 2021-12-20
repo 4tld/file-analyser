@@ -34,6 +34,7 @@
     "indent": [1, 2],
     "init-declarations": 0,
     "line-comment-position": 0,
+    "lines-around-comment": 0,
     "max-depth": 0,
     "max-len": 0,
     "max-lines": 0,
