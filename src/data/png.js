@@ -28,7 +28,7 @@ export default [
   {
     name: 'PNG Magic Number',
     type: 'fixed',
-    pattern: /\x89PNG\r\n\x1A\n/su,
+    pattern: /\x89PNG\r\n\cZ\n/su,
   },
   {
     name: 'PNG Chunk',

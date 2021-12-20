@@ -1,4 +1,3 @@
-
 export default [
   {
     name: 'Photoshop document magic number',
@@ -13,7 +12,7 @@ export default [
   {
     name: 'Dalvik executable magic number',
     type: 'fixed',
-    pattern: /dex\n035\x00/su,
+    pattern: /dex\n035\0/su,
   },
   {
     type: 'fixed',
@@ -26,11 +25,6 @@ export default [
     name: 'XCF magic number',
     type: 'fixed',
     pattern: /gimp xcf /su,
-  },
-  {
-    name: 'ID3v2 container header',
-    type: 'fixed',
-    pattern: /ID3/su,
   },
   {
     name: 'LZIP compressed magic number',
@@ -50,7 +44,7 @@ export default [
   {
     name: 'ZIP compressed magic number',
     type: 'fixed',
-    pattern: /PK(?<type>\x03\x04|\x05\x06|\x07\x08)/su,
+    pattern: /PK(?<type>\cC\cD|\cE\cF|\cG\cH)/su,
     createBlock: (match) => ({
       content: match[0].slice(0, 2),
     }),
