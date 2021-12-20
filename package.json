@@ -19,15 +19,15 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.14.7",
+    "@babel/eslint-parser": "^7.16.5",
     "@vue/cli-plugin-babel": "^5.0.0-beta.2",
     "@vue/cli-plugin-eslint": "^5.0.0-beta.2",
     "@vue/cli-service": "^5.0.0-beta.2",
-    "@vue/compiler-sfc": "^3.1.4",
-    "electron": "^13.0.0",
-    "electron-devtools-installer": "^3.1.0",
-    "eslint": "^7.31.0",
-    "eslint-plugin-vue": "^7.15.1",
+    "@vue/compiler-sfc": "^3.2.26",
+    "electron": "^16.0.5",
+    "electron-devtools-installer": "^3.2.0",
+    "eslint": "^8.5.0",
+    "eslint-plugin-vue": "^8.2.0",
     "vue-cli-plugin-electron-builder": "~2.1.1"
   },
   "browserslist": [
