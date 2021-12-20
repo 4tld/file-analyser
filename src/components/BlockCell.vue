@@ -79,7 +79,7 @@
       v-if="showSubBlocks"
       class="subblocks"
     >
-      <Block
+      <BlockCell
         v-for="(subBlock, subBlockIndex) in block.subBlocks"
         :key="subBlockIndex"
         :index="subBlockIndex"
@@ -101,7 +101,7 @@ import {
 } from '../util/converters'
 
 export default {
-  name: 'Block',
+  name: 'BlockCell',
 
   props: {
     block: Object,

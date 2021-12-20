@@ -40,7 +40,7 @@
   >
     Blocks :
   </h3>
-  <Block
+  <BlockCell
     v-for="(block, index) in blocks"
     :key="index"
     :index="index"
@@ -52,11 +52,11 @@
 <script>
 import { mapState } from 'vuex'
 import { uint8ToHexString, uint8ToString } from '../util/converters'
-import Block from './Block'
+import BlockCell from './BlockCell'
 
 export default {
   components: {
-    Block,
+    BlockCell,
   },
 
   data () {
