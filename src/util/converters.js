@@ -5,6 +5,14 @@ export function uint8ToHexString (uint8) {
   uint8.reduce((acc, byte) => acc + (0 + byte.toString(16)).slice(-2), '')
 }
 
+export function stringToBinary (string) {
+  let binary = ''
+  for (const char of string) {
+    binary += `0000000${char.charCodeAt().toString(2)}`.slice(-8)
+  }
+  return binary
+}
+
 export function stringToHexArray (string) {
   const hex = []
   for (const char of string) {
@@ -25,6 +33,14 @@ export function littleEndian32StringToNumber (string) {
   let number = 0;
   [...string].forEach((char, index) => {
     number += char.charCodeAt() * 256 ** index
+  })
+  return number
+}
+
+export function syncsafe32StringToNumber (string) {
+  let number = 0;
+  [...string].forEach((char, index) => {
+    number += char.charCodeAt() * 128 ** (string.length - 1 - index)
   })
   return number
 }

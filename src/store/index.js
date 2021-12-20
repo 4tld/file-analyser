@@ -20,6 +20,7 @@ export const store = createStore({
       'fixed',
       'intbe32',
       'intle32',
+      'intss32',
       'ascii',
       'unknown',
     ],

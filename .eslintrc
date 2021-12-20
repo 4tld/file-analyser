@@ -42,6 +42,7 @@
     "max-params": 0,
     "max-statements": 0,
     "multiline-ternary": [1, "always-multiline"],
+    "no-bitwise": 0,
     "no-control-regex": 0,
     "no-console": 1,
     "no-continue": 0,

@@ -7,13 +7,19 @@
         {{ block.start }} <br /> {{ block.start + block.contents.length - 1 }}
       </div>
       <div>
+        {{ block.name }} ({{ block.contents.length % 1024 ? block.contents.length : `${block.contents.length / 1024} kb` }})<br />
         <div v-if="block.type === 'intbe32'">
-          {{ intbe32 }}<br />
+          {{ intbe32 }}
         </div>
         <div v-if="block.type === 'intle32'">
-          {{ intle32 }}<br />
+          {{ intle32 }}
         </div>
-        {{ block.name }} ({{ block.contents.length }})
+        <div v-if="block.type === 'intss32'">
+          {{ intss32 }}
+        </div>
+        <div v-if="block.description">
+          {{ block.description }}
+        </div>
       </div>
       <div class="flex--align-right">
         <button
@@ -37,6 +43,13 @@
           {{ showHex ? 'Hide hex' : 'Show hex' }}
         </button>
         <button
+          v-if="['binary'].includes(block.type)"
+          type="button"
+          @click="showBinary = !showBinary"
+        >
+          {{ showBinary ? 'Hide binary' : 'Show binary' }}
+        </button>
+        <button
           v-if="block.subBlocks?.length"
           type="button"
           @click="showSubBlocks = !showSubBlocks"
@@ -54,6 +67,11 @@
       <textarea
         v-if="showHex"
         :value="blockHex"
+        readonly
+      />
+      <textarea
+        v-if="showBinary"
+        :value="blockBinary"
         readonly
       />
     </div>
@@ -77,7 +95,9 @@ import { mapState } from 'vuex'
 import {
   bigEndian32StringToNumber,
   littleEndian32StringToNumber,
+  stringToBinary,
   stringToHexArray,
+  syncsafe32StringToNumber,
 } from '../util/converters'
 
 export default {
@@ -94,6 +114,7 @@ export default {
     return {
       showText: false,
       showHex: false,
+      showBinary: false,
       showSubBlocks: false,
     }
   },
@@ -107,12 +128,20 @@ export default {
       return stringToHexArray(this.block.contents).join('.')
     },
 
+    blockBinary () {
+      return stringToBinary(this.block.contents)
+    },
+
     intbe32 () {
       return bigEndian32StringToNumber(this.block.contents)
     },
 
     intle32 () {
       return littleEndian32StringToNumber(this.block.contents)
+    },
+
+    intss32 () {
+      return syncsafe32StringToNumber(this.block.contents)
     },
   },
 
