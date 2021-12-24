@@ -12,6 +12,7 @@ const riffFormats = `${riffFileTypes}|${riffListTypes}`
 export default [
   {
     name: 'RIFF Chunk',
+    level: 2,
     pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
     createBlock: (match) => {
       const dataLength = littleEndian32StringToNumber(match.groups.length)

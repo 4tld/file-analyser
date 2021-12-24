@@ -102,6 +102,7 @@ export default [
   },
   {
     pattern: /ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})/su,
+    level: 1,
     createBlock: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)
       const unsynchronisation = match.groups.flags & 0b10000000 > 0

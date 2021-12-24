@@ -7,6 +7,7 @@ const pngChunkDescriptions = {
 export default [
   {
     name: 'MP4 Chunk',
+    level: 2,
     pattern: /(?<length>.{4})(?<type>ftyp|mdat|moov|pnot|udta|uuid|moof|free|skip|jP2 |wide|load|ctab|imap|matt|kmat|clip|crgn|sync|chap|tmcd|scpt|ssrc|PICT)/su,
     createBlock: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)

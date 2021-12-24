@@ -50,7 +50,7 @@
           {{ showBinary ? 'Hide binary' : 'Show binary' }}
         </button>
         <button
-          v-if="block.subBlocks?.length"
+          v-if="!unfold && block.subBlocks?.length"
           type="button"
           @click="showSubBlocks = !showSubBlocks"
         >
@@ -76,7 +76,7 @@
       />
     </div>
     <div
-      v-if="showSubBlocks"
+      v-if="showSubBlocks || unfold"
       class="subblocks"
     >
       <BlockCell
@@ -84,6 +84,7 @@
         :key="subBlockIndex"
         :index="subBlockIndex"
         :block="subBlock"
+        :unfold="unfold"
         @update-blocks="updateBlocks"
       />
     </div>
@@ -106,6 +107,7 @@ export default {
   props: {
     block: Object,
     index: Number,
+    unfold: Boolean,
   },
 
   emits: ['update-blocks'],
@@ -205,6 +207,8 @@ export default {
       if (newBlock.length) {
         const blocksToSplice = [ ...newBlock, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
         this.$emit('update-blocks', blocksToSplice, this.index)
+      } else {
+        this.$emit('update-blocks', [{ ...this.block, analysed: true }], this.index)
       }
       this.loading = false
     },

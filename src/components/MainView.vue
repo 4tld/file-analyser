@@ -40,11 +40,19 @@
   >
     Blocks :
   </h3>
+  <button
+    v-if="blocks.length"
+    type="button"
+    @click="unfold = !unfold"
+  >
+    {{ unfold ? 'Stop unfoldings' : 'Unfold all blocks' }}
+  </button>
   <BlockCell
     v-for="(block, index) in blocks"
     :key="index"
     :index="index"
     :block="block"
+    :unfold="unfold"
     @update-blocks="updateBlocks"
   />
 </template>
@@ -66,6 +74,7 @@ export default {
       hexDump: '',
       fileString: '',
       blocks: [],
+      unfold: false,
       fileInfos: {
         set: false,
         name: '',
