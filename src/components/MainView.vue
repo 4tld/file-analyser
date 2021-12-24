@@ -1,4 +1,11 @@
 <template>
+  <div class="flex">
+    <img
+      width="50"
+      src="../../public/favicon.svg"
+    />
+    <h1>&emsp;4tld File Analyser</h1>
+  </div>
   <input
     type="file"
     @change="load"

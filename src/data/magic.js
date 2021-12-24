@@ -7,7 +7,7 @@ export default [
   {
     name: 'SWF magic number',
     type: 'fixed',
-    pattern: /CWS|FWS|ZWS/su,
+    pattern: /^(?:CWS|FWS|ZWS)/su,
   },
   {
     name: 'Dalvik executable magic number',

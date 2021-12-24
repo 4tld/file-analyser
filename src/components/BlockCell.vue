@@ -30,7 +30,7 @@
           Analyse
         </button>
         <button
-          v-if="['ascii', 'fixed', 'unknown'].includes(block.type)"
+          v-if="allowText"
           type="button"
           @click="showText = !showText"
         >
@@ -43,7 +43,7 @@
           {{ showHex ? 'Hide hex' : 'Show hex' }}
         </button>
         <button
-          v-if="['binary'].includes(block.type)"
+          v-if="allowBinary"
           type="button"
           @click="showBinary = !showBinary"
         >
@@ -60,7 +60,7 @@
     </div>
     <div class="flex">
       <textarea
-        v-if="showText"
+        v-if="allowText && showText"
         :value="block.contents"
         readonly
       />
@@ -70,7 +70,7 @@
         readonly
       />
       <textarea
-        v-if="showBinary"
+        v-if="allowBinary && showBinary"
         :value="blockBinary"
         readonly
       />
@@ -125,6 +125,14 @@ export default {
     ...mapState({
       blockInfos: 'blockInfos',
     }),
+
+    allowText () {
+      return [ 'ascii', 'fixed', 'unknown' ].includes(this.block.type)
+    },
+
+    allowBinary () {
+      return ['binary'].includes(this.block.type)
+    },
 
     blockHex () {
       return stringToHexArray(this.block.contents).join('.')
