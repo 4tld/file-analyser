@@ -8,14 +8,8 @@
       </div>
       <div>
         {{ block.name }} ({{ block.contents.length % 1024 ? block.contents.length : `${block.contents.length / 1024} kb` }})<br />
-        <div v-if="block.type === 'intbe32'">
-          {{ intbe32 }}
-        </div>
-        <div v-if="block.type === 'intle32'">
-          {{ intle32 }}
-        </div>
-        <div v-if="block.type === 'intss32'">
-          {{ intss32 }}
+        <div v-if="blockContent[block.type]">
+          {{ blockContent[block.type](block.contents) }}
         </div>
         <div v-if="block.description">
           {{ block.description }}
@@ -29,26 +23,20 @@
         >
           Analyse
         </button>
-        <button
-          v-if="allowText"
-          type="button"
-          @click="showText = !showText"
-        >
-          {{ showText ? 'Hide text' : 'Show text' }}
-        </button>
-        <button
-          type="button"
-          @click="showHex = !showHex"
-        >
-          {{ showHex ? 'Hide hex' : 'Show hex' }}
-        </button>
-        <button
-          v-if="allowBinary"
-          type="button"
-          @click="showBinary = !showBinary"
-        >
-          {{ showBinary ? 'Hide binary' : 'Show binary' }}
-        </button>
+        <div class="flex">
+          <div
+            v-for="(type, key) in blockView"
+            :key="key"
+          >
+            <button
+              v-if="type.allow(block.type)"
+              type="button"
+              @click="type.show = !type.show"
+            >
+              {{ type.show ? `Hide ${type.name}` : `Show ${type.name}` }}
+            </button>
+          </div>
+        </div>
         <button
           v-if="!unfold && block.subBlocks?.length"
           type="button"
@@ -59,21 +47,16 @@
       </div>
     </div>
     <div class="flex">
-      <textarea
-        v-if="allowText && showText"
-        :value="block.contents"
-        readonly
-      />
-      <textarea
-        v-if="showHex"
-        :value="blockHex"
-        readonly
-      />
-      <textarea
-        v-if="allowBinary && showBinary"
-        :value="blockBinary"
-        readonly
-      />
+      <div
+        v-for="(type, key) in blockView"
+        :key="key"
+      >
+        <textarea
+          v-if="type.show && type.allow(block.type)"
+          :value="type.content(block.contents)"
+          readonly
+        />
+      </div>
     </div>
     <div
       v-if="showSubBlocks || unfold"
@@ -114,50 +97,44 @@ export default {
 
   data () {
     return {
-      showText: false,
-      showHex: false,
-      showBinary: false,
       showSubBlocks: false,
+      blockContent: {
+        intbe32: bigEndian32StringToNumber,
+        intle32: littleEndian32StringToNumber,
+        intss32: syncsafe32StringToNumber,
+      },
+
+      blockView: [
+        {
+          name: 'text',
+          show: false,
+          allow: (type) => [ 'ascii', 'fixed', 'unknown' ].includes(type),
+          content: (contents) => contents,
+        },
+
+        {
+          name: 'hex',
+          show: false,
+          allow: () => true,
+          content: (contents) => stringToHexArray(contents).join('.'),
+        },
+
+        {
+          name: 'binary',
+          show: false,
+          allow: (type) => ['binary'].includes(type),
+          content: stringToBinary,
+        },
+      ],
     }
   },
 
-  computed: {
-    ...mapState({
-      blockInfos: 'blockInfos',
-    }),
-
-    allowText () {
-      return [ 'ascii', 'fixed', 'unknown' ].includes(this.block.type)
-    },
-
-    allowBinary () {
-      return ['binary'].includes(this.block.type)
-    },
-
-    blockHex () {
-      return stringToHexArray(this.block.contents).join('.')
-    },
-
-    blockBinary () {
-      return stringToBinary(this.block.contents)
-    },
-
-    intbe32 () {
-      return bigEndian32StringToNumber(this.block.contents)
-    },
-
-    intle32 () {
-      return littleEndian32StringToNumber(this.block.contents)
-    },
-
-    intss32 () {
-      return syncsafe32StringToNumber(this.block.contents)
-    },
-  },
+  computed: mapState({
+    blockInfos: 'blockInfos',
+  }),
 
   methods: {
     analyseBlock () {
-      this.loading = true
       const newBlock = []
       let blocksToAnalyse = [this.block]
       for (const blockInfo of this.blockInfos) {
@@ -212,13 +189,10 @@ export default {
           blocksToAnalyse = newBTA
         }
       }
-      if (newBlock.length) {
-        const blocksToSplice = [ ...newBlock, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
-        this.$emit('update-blocks', blocksToSplice, this.index)
-      } else {
-        this.$emit('update-blocks', [{ ...this.block, analysed: true }], this.index)
-      }
-      this.loading = false
+      const blocksToSplice = newBlock.length
+        ? [ ...newBlock, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
+        : [{ ...this.block, analysed: true }]
+      this.$emit('update-blocks', blocksToSplice, this.index)
     },
 
     updateBlocks (blocksToSplice, index) {

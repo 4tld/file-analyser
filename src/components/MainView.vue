@@ -35,13 +35,6 @@
     SIZE: {{ fileInfos.size }} bytes<br />
     DATE: {{ fileInfos.lastModifiedDate }}
   </div>
-  <button
-    v-if="fileString && !blocks.length"
-    type="button"
-    @click="generateBlocks"
-  >
-    Generate blocks
-  </button>
   <h3
     v-if="blocks.length"
   >
@@ -52,8 +45,9 @@
     type="button"
     @click="unfold = !unfold"
   >
-    {{ unfold ? 'Stop unfoldings' : 'Unfold all blocks' }}
+    {{ unfold ? 'Stop unfolding' : 'Unfold all blocks' }}
   </button>
+  <br />
   <BlockCell
     v-for="(block, index) in blocks"
     :key="index"
@@ -65,8 +59,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import { uint8ToHexString, uint8ToString } from '../util/converters'
+import { uint8ToString } from '../util/converters'
 import BlockCell from './BlockCell'
 
 export default {
@@ -78,7 +71,6 @@ export default {
     return {
       loading: false,
       loadingProgress: 0,
-      hexDump: '',
       fileString: '',
       blocks: [],
       unfold: false,
@@ -92,15 +84,10 @@ export default {
     }
   },
 
-  computed: mapState({
-    blockInfos: 'blockInfos',
-  }),
-
   methods: {
     load ({ target: { files } }) {
       this.loading = true
 
-      this.hexDump = ''
       this.fileString = ''
       this.blocks = []
 
@@ -116,22 +103,18 @@ export default {
       reader.onload = ({ target }) => {
         const uint = new Uint8Array(target.result)
         this.fileString = uint8ToString(uint)
-        this.hexDump = uint8ToHexString(uint)
         this.loading = false
+        this.blocks = [
+          {
+            start: 0,
+            name: 'file',
+            type: 'unknown',
+            analysed: false,
+            contents: this.fileString,
+          },
+        ]
       }
       reader.readAsArrayBuffer(files[0])
-    },
-
-    generateBlocks () {
-      this.blocks = [
-        {
-          start: 0,
-          name: 'unknown',
-          type: 'unknown',
-          analysed: false,
-          contents: this.fileString,
-        },
-      ]
     },
 
     updateBlocks (blocksToSplice, index) {
