@@ -1,11 +1,70 @@
 body {
-  background-color: black;
-  color: white;
+  background-color: #000;
+  color: #fff;
   font-family: monospace;
 }
 
-.bordered {
-  border: solid 1px;
+button, textarea, .upload-label {
+  background: #fff1;
+  border: #444 solid 2px;
+  border-radius: 4px;
+  color: #fff;
+  font-family: monospace;
+  font-size: medium;
+  margin: 2px;
+  padding: 2px;
+  transition: .2s;
+}
+
+button, .upload-label {
+  user-select: none;
+}
+
+button:focus, textarea:focus, .upload-label:focus {
+  border: #ccc solid 2px;
+  outline: none;
+}
+
+button:hover, .upload-label:hover {
+  background: #fff2;
+}
+
+button:active, .upload-label:active {
+  border: #000 solid 2px;
+}
+
+textarea {
+  resize: vertical;
+  min-width: 32rem;
+  min-height: 4rem;
+  max-height: 32rem;
+}
+
+textarea:hover {
+  background: #0008;
+}
+
+.box {
+  background: #8882;
+  border-radius: 8px;
+  margin: 2px;
+  padding: 1px;
+  transition: .2s;
+}
+
+.box:hover {
+  background: #8884;
+}
+
+.error {
+  background-color: #f004;
+  border: #400 solid 2px;
+  margin-block: 4px;
+  padding: 2px 6px;
+}
+
+.error:hover {
+  background-color: #f008;
 }
 
 .flex {
@@ -16,19 +75,51 @@ body {
   margin-left: auto;
 }
 
-.error {
-  background-color: red;
-  color: black;
-}
-
 .width-50 {
-  width: 50%
+  width: 50%;
 }
 
-.subblocks {
+.sub-blocks {
   margin-inline-start: 3rem;
 }
 
 .block-start-end {
-  width: 3rem;
+  margin-right: 1rem;
+  padding-right: 0.2rem;
+  text-align: end;
+  width: 4rem;
+}
+
+.upload-input {
+  display: none;
+}
+
+.button-icon {
+  padding-bottom: 0;
+}
+
+::-webkit-scrollbar {
+  background: transparent;
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #ccc;
+  border-radius: 0;
+}
+
+::-webkit-resizer {
+  background: #444;
+  border-top-left-radius: 16px;
 }
