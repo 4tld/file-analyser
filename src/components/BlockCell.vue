@@ -1,13 +1,13 @@
 <template>
   <div
-    class="bordered"
+    class="box"
   >
     <div class="flex width-50">
-      <div class="block-start-end bordered">
+      <div class="block-start-end box">
         {{ block.start }} <br /> {{ block.start + block.contents.length - 1 }}
       </div>
       <div>
-        {{ block.name }} ({{ block.contents.length % 1024 ? block.contents.length : `${block.contents.length / 1024} kb` }})<br />
+        {{ block.name }} ({{ block.contents.length % 1024 ? block.contents.length : `${block.contents.length / 1024} KB` }})<br />
         <div v-if="blockContent[block.type]">
           {{ blockContent[block.type](block.contents) }}
         </div>
@@ -31,9 +31,13 @@
             <button
               v-if="type.allow(block.type)"
               type="button"
+              class="button-icon"
               @click="type.show = !type.show"
             >
-              {{ type.show ? `Hide ${type.name}` : `Show ${type.name}` }}
+              <img
+                :src="require(`../assets/${type.name}${type.show ? '-disabled' : ''}.svg`)"
+                :title="type.show ? `Hide ${type.name}` : `Show ${type.name}`"
+              />
             </button>
           </div>
         </div>
@@ -60,7 +64,7 @@
     </div>
     <div
       v-if="showSubBlocks || unfold"
-      class="subblocks"
+      class="sub-blocks"
     >
       <BlockCell
         v-for="(subBlock, subBlockIndex) in block.subBlocks"

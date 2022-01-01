@@ -1,20 +1,24 @@
 <template>
   <div class="flex">
     <img
-      width="50"
+      width="48"
       src="../../public/favicon.svg"
     />
-    <h1>&emsp;4tld File Analyser</h1>
+    <h1>&nbsp;4tld File Analyser</h1>
   </div>
-  <input
-    type="file"
-    @change="load"
-  />
+  <label class="upload-label">
+    Choose file
+    <input
+      type="file"
+      class="upload-input"
+      @change="load"
+    />
+  </label>
   <br />
   <div
     v-if="loading"
   >
-    <label for="loading">Loading...</label>
+    <label for="loading">Loading...&nbsp;</label>
     <progress
       id="loading"
       max="100"
@@ -28,7 +32,7 @@
   </h3>
   <div
     v-if="fileInfos.set"
-    class="bordered"
+    class="box"
   >
     NAME: {{ fileInfos.name }}<br />
     TYPE: {{ fileInfos.type }}<br />

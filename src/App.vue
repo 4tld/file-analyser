@@ -2,7 +2,7 @@
   <RouterView />
   <div
     v-if="error"
-    class="bordered error"
+    class="box error"
   >
     An error occurred: {{ error.message }}
   </div>
