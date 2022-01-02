@@ -86,6 +86,7 @@ button:active, .upload-label:active {
 }
 
 .flex--align-right {
+  justify-content: end;
   margin-left: auto;
 }
 
@@ -114,9 +115,9 @@ button:active, .upload-label:active {
 }
 
 .button-icon span {
+  margin-left: 2px;
   position: relative;
   top: -3px;
-  margin-left: 2px;
 }
 
 .window-container {

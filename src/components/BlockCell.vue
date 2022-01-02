@@ -25,7 +25,7 @@
           <img src="../assets/analyse.svg" />
           <span>Analyse</span>
         </button>
-        <div class="flex">
+        <div class="flex flex--align-right">
           <div
             v-for="(type, key) in blockView"
             :key="key"
