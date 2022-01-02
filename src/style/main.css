@@ -39,7 +39,7 @@ button:active, .upload-label:active {
 }
 
 .box {
-  box-shadow: #2228 0 0;
+  box-shadow: #4448 0 0;
   margin: 2px;
   overflow: visible;
   padding: 1px;
@@ -47,7 +47,7 @@ button:active, .upload-label:active {
 
 .box:hover {
   background: #8882;
-  box-shadow: #2228 0 0 0 2px, #0008 0 0;
+  box-shadow: #4448 0 0 0 2px, #0008 0 0;
 }
 
 .box:active {
