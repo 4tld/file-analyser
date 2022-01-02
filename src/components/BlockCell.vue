@@ -54,12 +54,14 @@
       <div
         v-for="(type, key) in blockView"
         :key="key"
+        class="window-container"
       >
-        <textarea
+        <div
           v-if="type.show && type.allow(block.type)"
-          :value="type.content(block.contents)"
-          readonly
-        />
+          class="window"
+        >
+          {{ type.content(block.contents) }}
+        </div>
       </div>
     </div>
     <div

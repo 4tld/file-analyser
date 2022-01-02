@@ -4,67 +4,79 @@ body {
   font-family: monospace;
 }
 
-button, textarea, .upload-label {
+button, .upload-label {
   background: #fff1;
   border: #444 solid 2px;
   border-radius: 4px;
+  box-shadow: #0008 0 0;
   color: #fff;
   font-family: monospace;
   font-size: medium;
   margin: 2px;
   padding: 2px;
   transition: .2s;
-}
-
-button, .upload-label {
   user-select: none;
 }
 
-button:focus, textarea:focus, .upload-label:focus {
+button:focus, .upload-label:focus {
   border: #ccc solid 2px;
   outline: none;
 }
 
 button:hover, .upload-label:hover {
   background: #fff2;
+  box-shadow: #0008 2px 2px;
 }
 
 button:active, .upload-label:active {
   border: #000 solid 2px;
 }
 
-textarea {
-  resize: vertical;
-  min-width: 32rem;
-  min-height: 4rem;
-  max-height: 32rem;
-}
-
-textarea:hover {
-  background: #0008;
-}
-
-.box {
+.box, .file-info {
   background: #8882;
   border-radius: 8px;
-  margin: 2px;
-  padding: 1px;
   transition: .2s;
 }
 
-.box:hover {
+.box:hover, .file-info:hover {
   background: #8884;
 }
 
+.box {
+  box-shadow: #0008 0 0;
+  margin: 2px;
+  overflow: visible;
+  padding: 1px;
+}
+
+.box:hover {
+  box-shadow: #0008 2px 2px;
+}
+
+.file-info {
+  border: #4448 solid 2px;
+  box-shadow: #fff4 2px 2px;
+  padding: 4px 8px;
+  width: fit-content;
+}
+
+.file-info:hover {
+  border: #8888 solid 2px;
+  box-shadow: #fff8 4px 4px;
+}
+
 .error {
-  background-color: #f004;
+  background-color: #f448;
   border: #400 solid 2px;
+  box-shadow: #f444 2px 2px;
   margin-block: 4px;
   padding: 2px 6px;
+  width: fit-content;
 }
 
 .error:hover {
-  background-color: #f008;
+  background-color: #f44;
+  box-shadow: #f448 4px 4px;
 }
 
 .flex {
@@ -85,7 +97,7 @@ textarea:hover {
 
 .block-start-end {
   margin-right: 1rem;
-  padding-right: 0.2rem;
+  padding-right: .2rem;
   text-align: end;
   width: 4rem;
 }
@@ -98,10 +110,52 @@ textarea:hover {
   padding-bottom: 0;
 }
 
+.window-container {
+  height: 0;
+}
+
+.window {
+  background: #222;
+  border: #000 solid 2px;
+  border-radius: 8px;
+  box-shadow: #0004 4px 4px;
+  margin: 2px;
+  overflow: auto;
+  padding: 4px;
+  position: relative;
+  top: -2.5em;
+  left: 51vw;
+  transition: .2s;
+  word-wrap: break-word;
+  width: 16em;
+  height: 16em;
+}
+
+.window:hover {
+  background: #000;
+  border-radius: 6px;
+  box-shadow: #0008 8px 8px;
+  z-index: 1;
+}
+
+.window:active {
+  border: #ccc solid 2px;
+  border-radius: 2px;
+  box-shadow: #ccc 4px 4px, #ccc 3px 3px, #ccc 2px 2px, #ccc 1px 1px;
+}
+
+::selection {
+  background: #ccc4;
+}
+
 ::-webkit-scrollbar {
   background: transparent;
   width: 12px;
   height: 12px;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {

@@ -32,7 +32,7 @@
   </h3>
   <div
     v-if="fileInfos.set"
-    class="box"
+    class="file-info"
   >
     NAME: {{ fileInfos.name }}<br />
     TYPE: {{ fileInfos.type }}<br />
