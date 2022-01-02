@@ -33,24 +33,25 @@ button:active, .upload-label:active {
 }
 
 .box, .file-info {
-  background: #8882;
+  background: #8881;
   border-radius: 8px;
   transition: .2s;
 }
 
-.box:hover, .file-info:hover {
-  background: #8884;
-}
-
 .box {
-  box-shadow: #0008 0 0;
+  box-shadow: #2228 0 0;
   margin: 2px;
   overflow: visible;
   padding: 1px;
 }
 
 .box:hover {
-  box-shadow: #0008 2px 2px;
+  background: #8882;
+  box-shadow: #2228 0 0 0 2px, #0008 0 0;
+}
+
+.box:active {
+  box-shadow: #000 0 0 0 2px, #0008 4px 4px;
 }
 
 .file-info {
@@ -61,6 +62,7 @@ button:active, .upload-label:active {
 }
 
 .file-info:hover {
+  background: #8884;
   border: #8888 solid 2px;
   box-shadow: #fff8 4px 4px;
 }
@@ -107,7 +109,14 @@ button:active, .upload-label:active {
 }
 
 .button-icon {
-  padding-bottom: 0;
+  line-height: 16px;
+  height: 24px;
+}
+
+.button-icon span {
+  position: relative;
+  top: -3px;
+  margin-left: 2px;
 }
 
 .window-container {

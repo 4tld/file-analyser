@@ -19,9 +19,11 @@
         <button
           v-if="!block.analysed"
           type="button"
+          class="button-icon"
           @click="analyseBlock"
         >
-          Analyse
+          <img src="../assets/analyse.svg" />
+          <span>Analyse</span>
         </button>
         <div class="flex">
           <div
@@ -32,12 +34,10 @@
               v-if="type.allow(block.type)"
               type="button"
               class="button-icon"
+              :title="type.show ? `Hide ${type.name}` : `Show ${type.name}`"
               @click="type.show = !type.show"
             >
-              <img
-                :src="require(`../assets/${type.name}${type.show ? '-disabled' : ''}.svg`)"
-                :title="type.show ? `Hide ${type.name}` : `Show ${type.name}`"
-              />
+              <img :src="require(`../assets/${type.name}${type.show ? '-disabled' : ''}.svg`)" />
             </button>
           </div>
         </div>
