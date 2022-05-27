@@ -1,4 +1,5 @@
 import { bigEndian32StringToNumber } from '../util/converters'
+import { BlockInfo } from '../classes/BlockInfo'
 
 const pngChunkDescriptions = {
   bKGD: 'Background colour',
@@ -26,14 +27,19 @@ const pngChunkDescriptions = {
 
 export default [
   {
-    name: 'PNG Magic Number',
-    type: 'fixed',
     pattern: /\x89PNG\r\n\cZ\n/su,
+    name: () => 'PNG Magic Number',
+    type: () => 'fixed',
   },
   {
-    name: 'PNG Chunk',
     pattern: /(?<length>.{4})(?<type>IHDR|PLTE|IDAT|IEND|tRNS|cHRM|gAMA|iCCP|sBIT|sRGB|tEXt|zTXt|iTXt|bKGD|hIST|pHYs|sPLT|tIME|dSIG|sTER|eXIf)/su,
-    createBlock: (match) => {
+    name: (match) => `PNG ${pngChunkDescriptions[match.groups.type] || `${match.groups.type} Chunk`}`,
+    type: () => 'chunk',
+    contents: (match) => {
+      const dataLength = bigEndian32StringToNumber(match.groups.length)
+      match.input.slice(match.index, match.index + 8 + dataLength + 4)
+    },
+    subBlocks: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)
       const subBlocks = [
         {
@@ -67,12 +73,7 @@ export default [
           contents: match.input.slice(match.index + 8, match.index + 8 + dataLength),
         })
       }
-      return {
-        name: `PNG ${pngChunkDescriptions[match.groups.type] || `${match.groups.type} Chunk`}`,
-        type: 'chunk',
-        contents: match.input.slice(match.index, match.index + 8 + dataLength + 4),
-        subBlocks,
-      }
+      return subBlocks
     },
   },
-]
+].map((info) => new BlockInfo(info))

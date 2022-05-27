@@ -1,4 +1,5 @@
 import { bigEndian32StringToNumber } from '../util/converters'
+import { BlockInfo } from '../classes/BlockInfo'
 
 // See: http://mirror.informatimago.com/next/developer.apple.com/documentation/QuickTime/APIREF/INDEX/atomalphaindex.htm
 const mp4ChunkDescriptions = {
@@ -168,10 +169,15 @@ const mp4ChunkDescriptions = {
 
 export default [
   {
-    name: 'MP4 Chunk',
     level: 2,
     pattern: RegExp(String.raw`(?<length>.{4})(?<type>${Object.keys(mp4ChunkDescriptions).join('|')})`, 'su'),
-    createBlock: (match) => {
+    name: (match) => `MP4 ${mp4ChunkDescriptions[match.groups.type]} chunk`,
+    type: () => 'chunk',
+    contents: (match) => {
+      const dataLength = bigEndian32StringToNumber(match.groups.length)
+      match.input.slice(match.index, match.index + 4 + dataLength)
+    },
+    subBlocks: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)
       const subBlocks = [
         {
@@ -198,12 +204,7 @@ export default [
           contents: match.input.slice(match.index + 8, match.index + 4 + dataLength),
         })
       }
-      return {
-        name: `MP4 ${mp4ChunkDescriptions[match.groups.type]} chunk`,
-        type: 'chunk',
-        contents: match.input.slice(match.index, match.index + 4 + dataLength),
-        subBlocks,
-      }
+      return subBlocks
     },
   },
-]
+].map((info) => new BlockInfo(info))

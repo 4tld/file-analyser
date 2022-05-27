@@ -146,40 +146,27 @@ export default {
       for (const blockInfo of this.blockInfos) {
         const newBTA = blocksToAnalyse
         let continueAnalyse = true
-        while (continueAnalyse) {
+        let times = 0
+        while (continueAnalyse && times++ < 10) {
           continueAnalyse = false
           for (const blockToAnalyse of blocksToAnalyse) {
-            const match = blockToAnalyse.contents.match(blockInfo.pattern)
-            if (match) {
-              let theBlock = {}
-              if (blockInfo.createBlock) {
-                theBlock = blockInfo.createBlock(match)
-              }
-              const { index: matchIndex } = match
-              const matchLength = match[0]?.length
+            const blockFound = blockInfo.block(blockToAnalyse)
+            if (blockFound && blockFound.contents) {
               continueAnalyse = true
-              const contents = theBlock.contents || blockToAnalyse.contents.slice(matchIndex, matchIndex + matchLength)
-              newBlock.push({
-                start: matchIndex + blockToAnalyse.start,
-                name: blockInfo.name,
-                type: blockInfo.type || 'unknown',
-                analysed: true,
-                contents,
-                ...theBlock,
-              })
+              newBlock.push(blockFound)
               const leftBlock = {
                 start: blockToAnalyse.start,
                 name: 'unknown',
                 type: 'unknown',
                 analysed: false,
-                contents: blockToAnalyse.contents.slice(0, matchIndex),
+                contents: blockToAnalyse.contents.slice(0, blockFound.start - blockToAnalyse.start),
               }
               const rightBlock = {
-                start: blockToAnalyse.start + matchIndex + contents.length,
+                start: blockFound.start + blockFound.contents.length,
                 name: 'unknown',
                 type: 'unknown',
                 analysed: false,
-                contents: blockToAnalyse.contents.slice(matchIndex + contents.length),
+                contents: blockToAnalyse.contents.slice(blockFound.start - blockToAnalyse.start + blockFound.contents.length),
               }
 
               const blocksToPush = []

@@ -1,4 +1,5 @@
 import { syncsafe32StringToNumber } from '../util/converters'
+import { BlockInfo } from '../classes/BlockInfo'
 
 const id3FrameHeaders = {
   AENC: 'Audio encryption',
@@ -96,20 +97,26 @@ const id3FrameHeaders = {
 }
 export default [
   {
-    name: 'ID3v1 container',
-    type: 'fixed',
     pattern: /TAG.{125}/su,
+    name: () => 'ID3v1 container',
+    type: () => 'fixed',
   },
   {
-    pattern: /ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})/su,
     level: 1,
-    createBlock: (match) => {
+    pattern: /ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})/su,
+    name: () => 'ID3v2 container',
+    type: () => 'chunk',
+    contents: (match) => {
+      const dataLength = syncsafe32StringToNumber(match.groups.length)
+      match.input.slice(match.index, match.index + 10 + dataLength)
+    },
+    subBlocks: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)
       const unsynchronisation = match.groups.flags & 0b10000000 > 0
       const extendedHeader = match.groups.flags & 0b01000000 > 0
       const experimental = match.groups.flags & 0b00100000 > 0
       const footer = match.groups.flags & 0b00010000 > 0
-      const subBlocks = [
+      return [
         {
           start: match.index,
           name: 'ID3v2 magic number',
@@ -150,19 +157,19 @@ export default [
           contents: match.input.slice(match.index + 10, match.index + 10 + dataLength),
         },
       ]
-      return {
-        name: 'ID3v2 container',
-        type: 'chunk',
-        contents: match.input.slice(match.index, match.index + 10 + dataLength),
-        subBlocks,
-      }
     },
   },
   {
+    name: (match) => `ID3v2 ${id3FrameHeaders[match.groups.type]} frame`,
+    type: () => 'chunk',
     pattern: RegExp(String.raw`(?<type>${Object.keys(id3FrameHeaders).join('|')})(?<length>[\0-\x7F]{4})(?<flags>.{2})`, 'su'),
-    createBlock: (match) => {
+    contents: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)
-      const subBlocks = [
+      match.input.slice(match.index, match.index + 10 + dataLength)
+    },
+    subBlocks: (match) => {
+      const dataLength = syncsafe32StringToNumber(match.groups.length)
+      return [
         {
           start: match.index,
           name: `${id3FrameHeaders[match.groups.type]} frame identifier`,
@@ -192,12 +199,6 @@ export default [
           contents: match.input.slice(match.index + 10, match.index + 10 + dataLength),
         },
       ]
-      return {
-        name: `ID3v2 ${id3FrameHeaders[match.groups.type]} frame`,
-        type: 'chunk',
-        contents: match.input.slice(match.index, match.index + 10 + dataLength),
-        subBlocks,
-      }
     },
   },
-]
+].map((info) => new BlockInfo(info))

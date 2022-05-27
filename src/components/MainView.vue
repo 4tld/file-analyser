@@ -26,12 +26,12 @@
     />
   </div>
   <h3
-    v-if="fileInfos.set"
+    v-if="fileInfos.name"
   >
     File infos:
   </h3>
   <div
-    v-if="fileInfos.set"
+    v-if="fileInfos.name"
     class="file-info"
   >
     NAME: {{ fileInfos.name }}<br />
@@ -79,7 +79,6 @@ export default {
       blocks: [],
       unfold: false,
       fileInfos: {
-        set: false,
         name: '',
         type: '',
         size: '',
@@ -92,11 +91,7 @@ export default {
     load ({ target: { files } }) {
       this.loading = true
 
-      this.fileString = ''
-      this.blocks = []
-
       this.fileInfos = {
-        set: true,
         name: files[0].name,
         type: files[0].type,
         size: files[0].size,

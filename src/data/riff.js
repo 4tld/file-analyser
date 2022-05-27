@@ -1,4 +1,5 @@
 import { littleEndian32StringToNumber } from '../util/converters'
+import { BlockInfo } from '../classes/BlockInfo'
 
 const riffMainChunks = 'RIFF|LIST|JUNK|DISP|PAD |PEAK'
 const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext|id3 '
@@ -11,10 +12,15 @@ const riffFormats = `${riffFileTypes}|${riffListTypes}`
 
 export default [
   {
-    name: 'RIFF Chunk',
     level: 2,
     pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
-    createBlock: (match) => {
+    name: (match) => `${match.groups.format || ''} ${match.groups.type} container`,
+    type: () => 'chunk',
+    contents: (match) => {
+      const dataLength = littleEndian32StringToNumber(match.groups.length)
+      return match.input.slice(match.index, match.index + 8 + dataLength)
+    },
+    subBlocks: (match) => {
       const dataLength = littleEndian32StringToNumber(match.groups.length)
       const subBlocks = [
         {
@@ -51,12 +57,7 @@ export default [
           contents: match.input.slice(match.index + offset, match.index + 8 + dataLength),
         })
       }
-      return {
-        name: `${match.groups.format || ''} ${match.groups.type} container`,
-        type: 'chunk',
-        contents: match.input.slice(match.index, match.index + 8 + dataLength),
-        subBlocks,
-      }
+      return subBlocks
     },
   },
-]
+].map((info) => new BlockInfo(info))
