@@ -6,7 +6,7 @@ const id3FrameHeaders = {
   APIC: 'Attached picture',
   ASPI: 'Audio seek point index',
   COMM: 'Comments',
-  COMR: 'Commercial frame',
+  COMR: 'Commercial',
   ENCR: 'Encryption method registration',
   EQU2: 'Equalisation (2)',
   EQUA: 'Equalization',
@@ -17,17 +17,17 @@ const id3FrameHeaders = {
   LINK: 'Linked information',
   MCDI: 'Music CD identifier',
   MLLT: 'MPEG location lookup table',
-  OWNE: 'Ownership frame',
-  PRIV: 'Private frame',
+  OWNE: 'Ownership',
+  PRIV: 'Private',
   PCNT: 'Play counter',
   POPM: 'Popularimeter',
-  POSS: 'Position synchronisation frame',
+  POSS: 'Position synchronisation',
   RBUF: 'Recommended buffer size',
   RVA2: 'Relative volume adjustment (2)',
   RVAD: 'Relative volume adjustment',
   RVRB: 'Reverb',
-  SEEK: 'Seek frame',
-  SIGN: 'Signature frame',
+  SEEK: 'Seek',
+  SIGN: 'Signature',
   SYLT: 'Synchronized lyric/text',
   SYTC: 'Synchronized tempo codes',
   TALB: 'Album/Movie/Show title',
@@ -81,7 +81,7 @@ const id3FrameHeaders = {
   TSSE: 'Software/Hardware and settings used for encoding',
   TSST: 'Set subtitle',
   TYER: 'Year',
-  TXXX: 'User defined text information frame',
+  TXXX: 'User defined text information',
   UFID: 'Unique file identifier',
   USER: 'Terms of use',
   USLT: 'Unsychronized lyric/text transcription',
@@ -93,22 +93,22 @@ const id3FrameHeaders = {
   WORS: 'Official internet radio station homepage',
   WPAY: 'Payment',
   WPUB: 'Publishers official webpage',
-  WXXX: 'User defined URL link frame',
+  WXXX: 'User defined URL link',
 }
 export default [
   {
     pattern: /TAG.{125}/su,
-    name: () => 'ID3v1 container',
-    type: () => 'fixed',
+    name: 'ID3v1 container',
+    type: 'fixed',
   },
   {
     level: 1,
     pattern: /ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})/su,
-    name: () => 'ID3v2 container',
-    type: () => 'chunk',
+    name: 'ID3v2 container',
+    type: 'chunk',
     contents: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)
-      match.input.slice(match.index, match.index + 10 + dataLength)
+      return match.input.slice(match.index, match.index + 10 + dataLength)
     },
     subBlocks: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)
@@ -161,11 +161,11 @@ export default [
   },
   {
     name: (match) => `ID3v2 ${id3FrameHeaders[match.groups.type]} frame`,
-    type: () => 'chunk',
+    type: 'chunk',
     pattern: RegExp(String.raw`(?<type>${Object.keys(id3FrameHeaders).join('|')})(?<length>[\0-\x7F]{4})(?<flags>.{2})`, 'su'),
     contents: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)
-      match.input.slice(match.index, match.index + 10 + dataLength)
+      return match.input.slice(match.index, match.index + 10 + dataLength)
     },
     subBlocks: (match) => {
       const dataLength = syncsafe32StringToNumber(match.groups.length)

@@ -15,7 +15,7 @@ export default [
     level: 2,
     pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
     name: (match) => `${match.groups.format || ''} ${match.groups.type} container`,
-    type: () => 'chunk',
+    type: 'chunk',
     contents: (match) => {
       const dataLength = littleEndian32StringToNumber(match.groups.length)
       return match.input.slice(match.index, match.index + 8 + dataLength)

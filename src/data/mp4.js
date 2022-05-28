@@ -172,10 +172,10 @@ export default [
     level: 2,
     pattern: RegExp(String.raw`(?<length>.{4})(?<type>${Object.keys(mp4ChunkDescriptions).join('|')})`, 'su'),
     name: (match) => `MP4 ${mp4ChunkDescriptions[match.groups.type]} chunk`,
-    type: () => 'chunk',
+    type: 'chunk',
     contents: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)
-      match.input.slice(match.index, match.index + 4 + dataLength)
+      return match.input.slice(match.index, match.index + 4 + dataLength)
     },
     subBlocks: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)

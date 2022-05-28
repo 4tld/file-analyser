@@ -28,16 +28,16 @@ const pngChunkDescriptions = {
 export default [
   {
     pattern: /\x89PNG\r\n\cZ\n/su,
-    name: () => 'PNG Magic Number',
-    type: () => 'fixed',
+    name: 'PNG Magic Number',
+    type: 'fixed',
   },
   {
     pattern: /(?<length>.{4})(?<type>IHDR|PLTE|IDAT|IEND|tRNS|cHRM|gAMA|iCCP|sBIT|sRGB|tEXt|zTXt|iTXt|bKGD|hIST|pHYs|sPLT|tIME|dSIG|sTER|eXIf)/su,
     name: (match) => `PNG ${pngChunkDescriptions[match.groups.type] || `${match.groups.type} Chunk`}`,
-    type: () => 'chunk',
+    type: 'chunk',
     contents: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)
-      match.input.slice(match.index, match.index + 8 + dataLength + 4)
+      return match.input.slice(match.index, match.index + 8 + dataLength + 4)
     },
     subBlocks: (match) => {
       const dataLength = bigEndian32StringToNumber(match.groups.length)

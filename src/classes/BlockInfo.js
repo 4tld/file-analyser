@@ -16,13 +16,16 @@ export class BlockInfo {
     contents,
     subBlocks,
   }) {
+    function initField (field) {
+      return typeof field == 'string' ? () => field : field
+    }
     this.level = level ?? 0
     this.pattern = pattern
-    this.name = name
-    this.type = type
-    this.description = description
-    this.contents = contents
-    this.subBlocks = subBlocks
+    this.name = initField(name)
+    this.type = initField(type)
+    this.description = initField(description)
+    this.contents = initField(contents)
+    this.subBlocks = initField(subBlocks)
   }
 
   block (analysedBlock) {
