@@ -60,6 +60,7 @@
     :unfold="unfold"
     @update-blocks="updateBlocks"
   />
+  <div class="drop-area" />
 </template>
 
 <script>

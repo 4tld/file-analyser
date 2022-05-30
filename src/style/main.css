@@ -154,6 +154,24 @@ button:active, .upload-label:active {
   box-shadow: #ccc 4px 4px, #ccc 3px 3px, #ccc 2px 2px, #ccc 1px 1px;
 }
 
+.drop-area {
+  outline: dashed 8px #fff8;
+  opacity: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: .2s;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+
+body:hover .drop-area {
+  border-radius: 4em;
+  outline-offset: -3em;
+  opacity: 1;
+}
+
 ::selection {
   background: #ccc4;
 }
