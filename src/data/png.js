@@ -1,5 +1,5 @@
 import { bigEndian32StringToNumber } from '../util/converters'
-import { BlockInfo } from '../classes/BlockInfo'
+import { Block, BlockInfo } from '../classes'
 
 const pngChunkDescriptions = {
   bKGD: 'Background colour',
@@ -42,36 +42,31 @@ export default [
     subBlocks: ({ groups, index, input }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
       const subBlocks = [
-        {
+        new Block({
           start: index,
           name: 'chunk length',
           type: 'intbe32',
-          analysed: true,
           contents: groups.length,
-        },
-        {
+        }),
+        new Block({
           start: index + 4,
           name: 'chunk type',
           type: 'ascii',
-          analysed: true,
           contents: groups.type,
-        },
-        {
+        }),
+        new Block({
           start: index + 8 + dataLength,
           name: 'chunk CRC',
           type: 'binary',
-          analysed: true,
           contents: input.slice(index + 8 + dataLength, index + 8 + dataLength + 4),
-        },
+        }),
       ]
       if (dataLength > 0) {
-        subBlocks.splice(2, 0, {
+        subBlocks.splice(2, 0, new Block({
           start: index + 8,
           name: 'chunk data',
-          type: 'unknown',
-          analysed: false,
           contents: input.slice(index + 8, index + 8 + dataLength),
-        })
+        }))
       }
       return subBlocks
     },

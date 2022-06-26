@@ -1,7 +1,8 @@
-import { BlockInfo } from '../classes/BlockInfo'
+import { BlockInfo } from '../classes'
 
 export default [
   {
+    level: -1,
     pattern: /\0{5,}/su,
     name: 'Zero padding',
     type: 'binary',

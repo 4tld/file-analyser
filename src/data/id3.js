@@ -1,5 +1,5 @@
 import { syncsafe32StringToNumber } from '../util/converters'
-import { BlockInfo } from '../classes/BlockInfo'
+import { Block, BlockInfo } from '../classes'
 
 const id3FrameHeaders = {
   AENC: 'Audio encryption',
@@ -118,21 +118,19 @@ export default [
       const experimental = groups.flags & 0b00100000 > 0
       const footer = groups.flags & 0b00010000 > 0
       return [
-        {
+        new Block({
           start: index,
           name: 'ID3v2 magic number',
           type: 'fixed',
-          analysed: true,
           contents: 'ID3',
-        },
-        {
+        }),
+        new Block({
           start: index + 3,
           name: `ID3v2 version ${groups.version[0].charCodeAt()}.${groups.version[1].charCodeAt()}`,
           type: 'fixed',
-          analysed: true,
           contents: groups.version,
-        },
-        {
+        }),
+        new Block({
           start: index + 5,
           name: 'ID3v2 flags',
           type: 'binary',
@@ -140,23 +138,19 @@ export default [
                         Extended header: ${extendedHeader ? 'yes' : 'no'} /
                         Experimental: ${experimental ? 'yes' : 'no'} /
                         Footer: ${footer ? 'yes' : 'no'}`,
-          analysed: true,
           contents: groups.flags,
-        },
-        {
+        }),
+        new Block({
           start: index + 6,
           name: 'chunk length',
           type: 'intss32',
-          analysed: true,
           contents: groups.length,
-        },
-        {
+        }),
+        new Block({
           start: index + 10,
           name: 'chunk data',
-          type: 'unknown',
-          analysed: false,
           contents: input.slice(index + 10, index + 10 + dataLength),
-        },
+        }),
       ]
     },
   },
@@ -171,34 +165,29 @@ export default [
     subBlocks: ({ groups, index, input }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
       return [
-        {
+        new Block({
           start: index,
           name: `${id3FrameHeaders[groups.type]} frame identifier`,
           type: 'fixed',
-          analysed: true,
           contents: groups.type,
-        },
-        {
+        }),
+        new Block({
           start: index + 4,
           name: 'frame length',
           type: 'intss32',
-          analysed: true,
           contents: groups.length,
-        },
-        {
+        }),
+        new Block({
           start: index + 8,
           name: 'ID3v2 flags',
           type: 'binary',
-          analysed: true,
           contents: groups.flags,
-        },
-        {
+        }),
+        new Block({
           start: index + 10,
           name: 'frame data',
-          type: 'unknown',
-          analysed: false,
           contents: input.slice(index + 10, index + 10 + dataLength),
-        },
+        }),
       ]
     },
   },

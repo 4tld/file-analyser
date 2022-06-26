@@ -82,6 +82,7 @@
 
 <script>
 import { mapState } from 'vuex'
+import { Block } from '../classes'
 import {
   bigEndian32StringToNumber,
   littleEndian32StringToNumber,
@@ -94,7 +95,7 @@ export default {
   name: 'BlockCell',
 
   props: {
-    block: Object,
+    block: Block,
     index: Number,
     unfold: Boolean,
   },
@@ -141,7 +142,7 @@ export default {
 
   methods: {
     analyseBlock () {
-      const newBlock = []
+      const newBlocks = []
       let blocksToAnalyse = [this.block]
       for (const blockInfo of this.blockInfos) {
         const newBTA = blocksToAnalyse
@@ -153,21 +154,17 @@ export default {
             const blockFound = blockInfo.block(blockToAnalyse)
             if (blockFound && blockFound.contents) {
               continueAnalyse = true
-              newBlock.push(blockFound)
-              const leftBlock = {
+              newBlocks.push(blockFound)
+              const leftBlock = new Block({
                 start: blockToAnalyse.start,
                 name: 'unknown',
-                type: 'unknown',
-                analysed: false,
                 contents: blockToAnalyse.contents.slice(0, blockFound.start - blockToAnalyse.start),
-              }
-              const rightBlock = {
+              })
+              const rightBlock = new Block({
                 start: blockFound.start + blockFound.contents.length,
                 name: 'unknown',
-                type: 'unknown',
-                analysed: false,
                 contents: blockToAnalyse.contents.slice(blockFound.start - blockToAnalyse.start + blockFound.contents.length),
-              }
+              })
 
               const blocksToPush = []
               if (leftBlock.contents.length) {
@@ -182,9 +179,9 @@ export default {
           blocksToAnalyse = newBTA
         }
       }
-      const blocksToSplice = newBlock.length
-        ? [ ...newBlock, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
-        : [{ ...this.block, analysed: true }]
+      const blocksToSplice = newBlocks.length
+        ? [ ...newBlocks, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
+        : [this.block.update({ analysed: true })]
       this.$emit('update-blocks', blocksToSplice, this.index)
     },
 

@@ -1,3 +1,5 @@
+import { Block } from './Block'
+
 export class BlockInfo {
   level
   pattern
@@ -33,14 +35,13 @@ export class BlockInfo {
     if (!match) {
       return false
     }
-    return {
-      analysed: true,
+    return new Block({
       start: analysedBlock.start + match.index,
       name: this.name(match),
       type: this.type(match),
       description: this.description ? this.description(match) : '',
       contents: this.contents ? this.contents(match) : match[0],
       subBlocks: this.subBlocks ? this.subBlocks(match) : [],
-    }
+    })
   }
 }

@@ -1,5 +1,5 @@
 import { bigEndian32StringToNumber } from '../util/converters'
-import { BlockInfo } from '../classes/BlockInfo'
+import { Block, BlockInfo } from '../classes'
 
 // See: http://mirror.informatimago.com/next/developer.apple.com/documentation/QuickTime/APIREF/INDEX/atomalphaindex.htm
 const mp4ChunkDescriptions = {
@@ -180,29 +180,25 @@ export default [
     subBlocks: ({ groups, index, input }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
       const subBlocks = [
-        {
+        new Block({
           start: index,
           name: 'chunk length',
           type: 'intbe32',
-          analysed: true,
           contents: groups.length,
-        },
-        {
+        }),
+        new Block({
           start: index + 4,
           name: 'chunk type',
           type: 'ascii',
-          analysed: true,
           contents: groups.type,
-        },
+        }),
       ]
       if (dataLength > 0) {
-        subBlocks.splice(2, 0, {
+        subBlocks.splice(2, 0, new Block({
           start: index + 8,
           name: 'chunk data',
-          type: 'unknown',
-          analysed: false,
           contents: input.slice(index + 8, index + 4 + dataLength),
-        })
+        }))
       }
       return subBlocks
     },

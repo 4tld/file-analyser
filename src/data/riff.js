@@ -1,5 +1,5 @@
 import { littleEndian32StringToNumber } from '../util/converters'
-import { BlockInfo } from '../classes/BlockInfo'
+import { Block, BlockInfo } from '../classes'
 
 const riffMainChunks = 'RIFF|LIST|JUNK|DISP|PAD |PEAK'
 const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext|id3 '
@@ -23,39 +23,34 @@ export default [
     subBlocks: ({ groups, index, input }) => {
       const dataLength = littleEndian32StringToNumber(groups.length)
       const subBlocks = [
-        {
+        new Block({
           start: index,
           name: 'identifier',
           type: 'ascii',
-          analysed: true,
           contents: groups.type,
-        },
-        {
+        }),
+        new Block({
           start: index + 4,
           name: 'chunk length',
           type: 'intle32',
-          analysed: true,
           contents: groups.length,
-        },
+        }),
       ]
       if (dataLength > 0) {
         if (groups.format) {
-          subBlocks.push({
+          subBlocks.push(new Block({
             start: index + 8,
             name: 'chunk format',
             type: 'ascii',
-            analysed: true,
             contents: groups.format,
-          })
+          }))
         }
         const offset = groups.format ? 12 : 8
-        subBlocks.push({
+        subBlocks.push(new Block({
           start: index + offset,
           name: 'chunk data',
-          type: 'unknown',
-          analysed: false,
           contents: input.slice(index + offset, index + 8 + dataLength),
-        })
+        }))
       }
       return subBlocks
     },

@@ -64,6 +64,7 @@
 
 <script>
 import { uint8ToString } from '../util/converters'
+import { Block } from '../classes'
 import BlockCell from './BlockCell'
 
 export default {
@@ -104,13 +105,12 @@ export default {
         this.fileString = uint8ToString(uint)
         this.loading = false
         this.blocks = [
-          {
-            start: 0,
-            name: 'file',
-            type: 'unknown',
-            analysed: false,
-            contents: this.fileString,
-          },
+          new Block(
+            {
+              name: 'file',
+              contents: this.fileString,
+            },
+          ),
         ]
       }
       reader.readAsArrayBuffer(files[0])
