@@ -23,7 +23,7 @@ export default [
   },
   {
     pattern: /GIF(?<version>87a|89a)/su,
-    name: (match) => `GIF version ${match.groups.version} magic number`,
+    name: ({ groups }) => `GIF version ${groups.version} magic number`,
     type: 'fixed',
   },
   {

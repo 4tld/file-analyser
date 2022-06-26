@@ -14,47 +14,47 @@ export default [
   {
     level: 2,
     pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
-    name: (match) => `${match.groups.format || ''} ${match.groups.type} container`,
+    name: ({ groups }) => `${groups.format || ''} ${groups.type} container`,
     type: 'chunk',
-    contents: (match) => {
-      const dataLength = littleEndian32StringToNumber(match.groups.length)
-      return match.input.slice(match.index, match.index + 8 + dataLength)
+    contents: ({ groups, index, input }) => {
+      const dataLength = littleEndian32StringToNumber(groups.length)
+      return input.slice(index, index + 8 + dataLength)
     },
-    subBlocks: (match) => {
-      const dataLength = littleEndian32StringToNumber(match.groups.length)
+    subBlocks: ({ groups, index, input }) => {
+      const dataLength = littleEndian32StringToNumber(groups.length)
       const subBlocks = [
         {
-          start: match.index,
+          start: index,
           name: 'identifier',
           type: 'ascii',
           analysed: true,
-          contents: match.groups.type,
+          contents: groups.type,
         },
         {
-          start: match.index + 4,
+          start: index + 4,
           name: 'chunk length',
           type: 'intle32',
           analysed: true,
-          contents: match.groups.length,
+          contents: groups.length,
         },
       ]
       if (dataLength > 0) {
-        if (match.groups.format) {
+        if (groups.format) {
           subBlocks.push({
-            start: match.index + 8,
+            start: index + 8,
             name: 'chunk format',
             type: 'ascii',
             analysed: true,
-            contents: match.groups.format,
+            contents: groups.format,
           })
         }
-        const offset = match.groups.format ? 12 : 8
+        const offset = groups.format ? 12 : 8
         subBlocks.push({
-          start: match.index + offset,
+          start: index + offset,
           name: 'chunk data',
           type: 'unknown',
           analysed: false,
-          contents: match.input.slice(match.index + offset, match.index + 8 + dataLength),
+          contents: input.slice(index + offset, index + 8 + dataLength),
         })
       }
       return subBlocks

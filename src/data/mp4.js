@@ -171,37 +171,37 @@ export default [
   {
     level: 2,
     pattern: RegExp(String.raw`(?<length>.{4})(?<type>${Object.keys(mp4ChunkDescriptions).join('|')})`, 'su'),
-    name: (match) => `MP4 ${mp4ChunkDescriptions[match.groups.type]} chunk`,
+    name: ({ groups }) => `MP4 ${mp4ChunkDescriptions[groups.type]} chunk`,
     type: 'chunk',
-    contents: (match) => {
-      const dataLength = bigEndian32StringToNumber(match.groups.length)
-      return match.input.slice(match.index, match.index + 4 + dataLength)
+    contents: ({ groups, index, input }) => {
+      const dataLength = bigEndian32StringToNumber(groups.length)
+      return input.slice(index, index + 4 + dataLength)
     },
-    subBlocks: (match) => {
-      const dataLength = bigEndian32StringToNumber(match.groups.length)
+    subBlocks: ({ groups, index, input }) => {
+      const dataLength = bigEndian32StringToNumber(groups.length)
       const subBlocks = [
         {
-          start: match.index,
+          start: index,
           name: 'chunk length',
           type: 'intbe32',
           analysed: true,
-          contents: match.groups.length,
+          contents: groups.length,
         },
         {
-          start: match.index + 4,
+          start: index + 4,
           name: 'chunk type',
           type: 'ascii',
           analysed: true,
-          contents: match.groups.type,
+          contents: groups.type,
         },
       ]
       if (dataLength > 0) {
         subBlocks.splice(2, 0, {
-          start: match.index + 8,
+          start: index + 8,
           name: 'chunk data',
           type: 'unknown',
           analysed: false,
-          contents: match.input.slice(match.index + 8, match.index + 4 + dataLength),
+          contents: input.slice(index + 8, index + 4 + dataLength),
         })
       }
       return subBlocks
