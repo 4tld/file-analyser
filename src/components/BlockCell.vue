@@ -81,7 +81,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import { Block } from '../classes'
 import {
   bigEndian32StringToNumber,
@@ -90,6 +89,7 @@ import {
   stringToHexArray,
   syncsafe32StringToNumber,
 } from '../util/converters'
+import { blockInfos } from '../data'
 
 export default {
   name: 'BlockCell',
@@ -104,6 +104,7 @@ export default {
 
   data () {
     return {
+      blockInfos,
       showSubBlocks: false,
       blockContent: {
         intbe32: bigEndian32StringToNumber,
@@ -135,10 +136,6 @@ export default {
       ],
     }
   },
-
-  computed: mapState({
-    blockInfos: 'blockInfos',
-  }),
 
   methods: {
     analyseBlock () {
