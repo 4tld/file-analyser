@@ -2,7 +2,7 @@
   <div class="flex">
     <img
       width="48"
-      src="../../public/favicon.svg"
+      src="/favicon.svg"
     />
     <h1>&nbsp;4tld File Analyser</h1>
   </div>

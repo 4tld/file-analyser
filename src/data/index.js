@@ -1,8 +1,8 @@
 
 import png from './png'
-import riff from '../riff'
+import riff from './riff'
 import magic from './magic'
-import mp4 from '../mp4'
+import mp4 from './mp4'
 import id3 from './id3'
 
 export const blockInfos = [

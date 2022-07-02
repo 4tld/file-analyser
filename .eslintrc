@@ -1,16 +1,13 @@
 {
   "root": true,
   "env": {
-    "node": true
+    "es2021": true
   },
   "extends": [
     "eslint:all",
     "plugin:vue/base",
     "plugin:vue/vue3-recommended"
   ],
-  "parserOptions": {
-    "parser": "@babel/eslint-parser"
-  },
   "rules": {
     "array-bracket-spacing": [
       1,

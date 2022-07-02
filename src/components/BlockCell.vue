@@ -22,7 +22,7 @@
           class="button-icon"
           @click="analyseBlock"
         >
-          <img src="../assets/analyse.svg" />
+          <img src="/assets/analyse.svg" />
           <span>Analyse</span>
         </button>
         <div class="flex flex--align-right">
@@ -37,7 +37,7 @@
               :title="type.show ? `Hide ${type.name}` : `Show ${type.name}`"
               @click="type.show = !type.show"
             >
-              <img :src="require(`../assets/${type.name}${type.show ? '-disabled' : ''}.svg`)" />
+              <img :src="`/assets/${type.name}${type.show ? '-disabled' : ''}.svg`" />
             </button>
           </div>
         </div>

@@ -4,13 +4,9 @@
   "private": true,
   "author": "The Adventure Foretold",
   "scripts": {
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
-    "start": "vue-cli-service serve"
+    "dev": "vite",
+    "start": "vite preview",
+    "build": "vite build"
   },
   "main": "background.js",
   "dependencies": {
@@ -19,16 +15,10 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.16.5",
-    "@vue/cli-plugin-babel": "^5.0.0-beta.2",
-    "@vue/cli-plugin-eslint": "^5.0.0-beta.2",
-    "@vue/cli-service": "^5.0.0-beta.2",
-    "@vue/compiler-sfc": "^3.2.26",
-    "electron": "^16.0.5",
-    "electron-devtools-installer": "^3.2.0",
+    "@vitejs/plugin-vue": "^2.3.3",
     "eslint": "^8.5.0",
     "eslint-plugin-vue": "^8.2.0",
-    "vue-cli-plugin-electron-builder": "~2.1.1"
+    "vite": "^2.9.13"
   },
   "browserslist": [
     "> 1%",
