@@ -1,4 +1,3 @@
-
 import png from './png'
 import riff from './riff'
 import magic from './magic'
