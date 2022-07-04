@@ -1,5 +1,6 @@
 import { littleEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
+import { BlockInfoConstruction, ChunkTypes } from '../util/types'
 
 const riffMainChunks = 'RIFF|LIST|JUNK|DISP|PAD |PEAK'
 const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext|id3 '
@@ -10,12 +11,12 @@ const riffFileTypes = 'ACON|AVI |CDDA|CPPO|PAL |QLCM|RDIB|RMID|RMMP|WAVE'
 const riffListTypes = 'INFO|wvpl|wave|lins|ins |lrgn|movi|rec |rgn |rgn2|lart|lar2|adtl'
 const riffFormats = `${riffFileTypes}|${riffListTypes}`
 
-export default [
+const riff: BlockInfoConstruction[] = [
   {
     level: 2,
     pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
     name: ({ groups }) => `${groups.format || ''} ${groups.type} container`,
-    type: 'chunk',
+    type: ChunkTypes.chunk,
     contents: ({ groups, index, input }) => {
       const dataLength = littleEndian32StringToNumber(groups.length)
       return input.slice(index, index + 8 + dataLength)
@@ -26,13 +27,13 @@ export default [
         new Block({
           start: index,
           name: 'identifier',
-          type: 'ascii',
+          type: ChunkTypes.ascii,
           contents: groups.type,
         }),
         new Block({
           start: index + 4,
           name: 'chunk length',
-          type: 'intle32',
+          type: ChunkTypes.intle32,
           contents: groups.length,
         }),
       ]
@@ -41,7 +42,7 @@ export default [
           subBlocks.push(new Block({
             start: index + 8,
             name: 'chunk format',
-            type: 'ascii',
+            type: ChunkTypes.ascii,
             contents: groups.format,
           }))
         }
@@ -55,4 +56,5 @@ export default [
       return subBlocks
     },
   },
-].map((info) => new BlockInfo(info))
+]
+export default riff.map((info) => new BlockInfo(info))
