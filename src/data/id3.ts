@@ -1,5 +1,6 @@
 import { syncsafe32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
+import { BlockInfoConstruction, ChunkTypes } from '../util/types'
 
 const id3FrameHeaders = {
   AENC: 'Audio encryption',
@@ -94,46 +95,46 @@ const id3FrameHeaders = {
   WPAY: 'Payment',
   WPUB: 'Publishers official webpage',
   WXXX: 'User defined URL link',
-}
+} as Record<string, string>
 
-export default [
+const id3: BlockInfoConstruction[] = [
   {
     pattern: /TAG.{125}/su,
     name: 'ID3v1 container',
-    type: 'fixed',
+    type: ChunkTypes.fixed,
   },
   {
     level: 1,
     pattern: /ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})/su,
     name: 'ID3v2 container',
-    type: 'chunk',
+    type: ChunkTypes.chunk,
     contents: ({ groups, index, input }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
       return input.slice(index, index + 10 + dataLength)
     },
     subBlocks: ({ groups, index, input }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
-      const unsynchronisation = groups.flags & 0b10000000 > 0
-      const extendedHeader = groups.flags & 0b01000000 > 0
-      const experimental = groups.flags & 0b00100000 > 0
-      const footer = groups.flags & 0b00010000 > 0
+      const unsynchronisation = (Number(groups.flags) & 0b10000000) > 0
+      const extendedHeader = (Number(groups.flags) & 0b01000000) > 0
+      const experimental = (Number(groups.flags) & 0b00100000) > 0
+      const footer = (Number(groups.flags) & 0b00010000) > 0
       return [
         new Block({
           start: index,
           name: 'ID3v2 magic number',
-          type: 'fixed',
+          type: ChunkTypes.fixed,
           contents: 'ID3',
         }),
         new Block({
           start: index + 3,
-          name: `ID3v2 version ${groups.version[0].charCodeAt()}.${groups.version[1].charCodeAt()}`,
-          type: 'fixed',
+          name: `ID3v2 version ${groups.version[0].charCodeAt(0)}.${groups.version[1].charCodeAt(0)}`,
+          type: ChunkTypes.fixed,
           contents: groups.version,
         }),
         new Block({
           start: index + 5,
           name: 'ID3v2 flags',
-          type: 'binary',
+          type: ChunkTypes.binary,
           description: `Unsynchronisation: ${unsynchronisation ? 'yes' : 'no'} /
                         Extended header: ${extendedHeader ? 'yes' : 'no'} /
                         Experimental: ${experimental ? 'yes' : 'no'} /
@@ -143,7 +144,7 @@ export default [
         new Block({
           start: index + 6,
           name: 'chunk length',
-          type: 'intss32',
+          type: ChunkTypes.intss32,
           contents: groups.length,
         }),
         new Block({
@@ -156,7 +157,7 @@ export default [
   },
   {
     name: ({ groups }) => `ID3v2 ${id3FrameHeaders[groups.type]} frame`,
-    type: 'chunk',
+    type: ChunkTypes.chunk,
     pattern: RegExp(String.raw`(?<type>${Object.keys(id3FrameHeaders).join('|')})(?<length>[\0-\x7F]{4})(?<flags>.{2})`, 'su'),
     contents: ({ groups, index, input }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
@@ -168,19 +169,19 @@ export default [
         new Block({
           start: index,
           name: `${id3FrameHeaders[groups.type]} frame identifier`,
-          type: 'fixed',
+          type: ChunkTypes.fixed,
           contents: groups.type,
         }),
         new Block({
           start: index + 4,
           name: 'frame length',
-          type: 'intss32',
+          type: ChunkTypes.intss32,
           contents: groups.length,
         }),
         new Block({
           start: index + 8,
           name: 'ID3v2 flags',
-          type: 'binary',
+          type: ChunkTypes.binary,
           contents: groups.flags,
         }),
         new Block({
@@ -191,4 +192,5 @@ export default [
       ]
     },
   },
-].map((info) => new BlockInfo(info))
+]
+export default id3.map((info) => new BlockInfo(info))

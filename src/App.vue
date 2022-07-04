@@ -8,22 +8,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
 
-export default {
+export default defineComponent({
   components: {
     RouterView,
   },
 
   data () {
     return {
-      error: false,
+      error: false as false|Error,
     }
   },
 
   errorCaptured (error) {
-    this.error = error
+    this.error = error as Error
   },
-}
+})
 </script>
