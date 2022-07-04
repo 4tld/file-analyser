@@ -1,5 +1,6 @@
 import { bigEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
+import { BlockInfoConstruction, ChunkTypes } from '../util/types'
 
 const pngChunkDescriptions = {
   bKGD: 'Background colour',
@@ -23,18 +24,18 @@ const pngChunkDescriptions = {
   tIME: 'Last-modification time',
   tRNS: 'Transparency',
   zTXt: 'Compressed textual data',
-}
+} as Record<string, string>
 
-export default [
+const png: BlockInfoConstruction[] = [
   {
     pattern: /\x89PNG\r\n\cZ\n/su,
     name: 'PNG Magic Number',
-    type: 'fixed',
+    type: ChunkTypes.fixed,
   },
   {
     pattern: /(?<length>.{4})(?<type>IHDR|PLTE|IDAT|IEND|tRNS|cHRM|gAMA|iCCP|sBIT|sRGB|tEXt|zTXt|iTXt|bKGD|hIST|pHYs|sPLT|tIME|dSIG|sTER|eXIf)/su,
     name: ({ groups }) => `PNG ${pngChunkDescriptions[groups.type] || `${groups.type} Chunk`}`,
-    type: 'chunk',
+    type: ChunkTypes.chunk,
     contents: ({ groups, index, input }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
       return input.slice(index, index + 8 + dataLength + 4)
@@ -45,19 +46,19 @@ export default [
         new Block({
           start: index,
           name: 'chunk length',
-          type: 'intbe32',
+          type: ChunkTypes.intbe32,
           contents: groups.length,
         }),
         new Block({
           start: index + 4,
           name: 'chunk type',
-          type: 'ascii',
+          type: ChunkTypes.ascii,
           contents: groups.type,
         }),
         new Block({
           start: index + 8 + dataLength,
           name: 'chunk CRC',
-          type: 'binary',
+          type: ChunkTypes.binary,
           contents: input.slice(index + 8 + dataLength, index + 8 + dataLength + 4),
         }),
       ]
@@ -71,4 +72,5 @@ export default [
       return subBlocks
     },
   },
-].map((info) => new BlockInfo(info))
+]
+export default png.map((info) => new BlockInfo(info))

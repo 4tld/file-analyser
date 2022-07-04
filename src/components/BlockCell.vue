@@ -8,8 +8,8 @@
       </div>
       <div>
         {{ block.name }} ({{ block.contents.length % 1024 ? block.contents.length : `${block.contents.length / 1024} KB` }})<br />
-        <div v-if="blockContent[block.type]">
-          {{ blockContent[block.type](block.contents) }}
+        <div v-if="block.type in blockContent">
+          {{ blockContent[block.type as keyof typeof blockContent](block.contents) }}
         </div>
         <div v-if="block.description">
           {{ block.description }}
@@ -80,7 +80,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Block } from '../classes'
 import {
   bigEndian32StringToNumber,
@@ -90,47 +90,49 @@ import {
   syncsafe32StringToNumber,
 } from '../util/converters'
 import { blockInfos } from '../data'
+import { ChunkTypes } from '../util/types'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'BlockCell',
 
   props: {
-    block: Block,
+    block: { type: Block, required: true },
     index: Number,
     unfold: Boolean,
   },
 
-  emits: ['update-blocks'],
+  emits: ['updateBlocks'],
 
   data () {
     return {
       blockInfos,
       showSubBlocks: false,
       blockContent: {
-        intbe32: bigEndian32StringToNumber,
-        intle32: littleEndian32StringToNumber,
-        intss32: syncsafe32StringToNumber,
+        [ChunkTypes.intbe32]: bigEndian32StringToNumber,
+        [ChunkTypes.intle32]: littleEndian32StringToNumber,
+        [ChunkTypes.intss32]: syncsafe32StringToNumber,
       },
 
       blockView: [
         {
           name: 'text',
           show: false,
-          allow: (type) => [ 'ascii', 'fixed', 'unknown' ].includes(type),
-          content: (contents) => contents,
+          allow: (type: ChunkTypes) => [ ChunkTypes.ascii, ChunkTypes.fixed, ChunkTypes.unknown ].includes(type),
+          content: (contents: string) => contents,
         },
 
         {
           name: 'hex',
           show: false,
           allow: () => true,
-          content: (contents) => stringToHexArray(contents).join('.'),
+          content: (contents: string) => stringToHexArray(contents).join('.'),
         },
 
         {
           name: 'binary',
           show: false,
-          allow: (type) => ['binary'].includes(type),
+          allow: (type: ChunkTypes) => [ChunkTypes.binary].includes(type),
           content: stringToBinary,
         },
       ],
@@ -149,7 +151,7 @@ export default {
           continueAnalyse = false
           for (const blockToAnalyse of blocksToAnalyse) {
             const blockFound = blockInfo.block(blockToAnalyse)
-            if (blockFound && blockFound.contents) {
+            if (blockFound !== false && blockFound.contents) {
               continueAnalyse = true
               newBlocks.push(blockFound)
               const leftBlock = new Block({
@@ -179,14 +181,14 @@ export default {
       const blocksToSplice = newBlocks.length
         ? [ ...newBlocks, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
         : [this.block.update({ analysed: true })]
-      this.$emit('update-blocks', blocksToSplice, this.index)
+      this.$emit('updateBlocks', blocksToSplice, this.index)
     },
 
-    updateBlocks (blocksToSplice, index) {
+    updateBlocks (blocksToSplice: Block[], index: number) {
       const newBlock = this.block
       newBlock.subBlocks.splice(index, 1, ...blocksToSplice)
-      this.$emit('update-blocks', [newBlock], this.index)
+      this.$emit('updateBlocks', [newBlock], this.index)
     },
   },
-}
+})
 </script>

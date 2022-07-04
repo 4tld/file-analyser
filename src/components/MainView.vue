@@ -37,7 +37,7 @@
     NAME: {{ fileInfos.name }}<br />
     TYPE: {{ fileInfos.type }}<br />
     SIZE: {{ fileInfos.size }} bytes<br />
-    DATE: {{ fileInfos.lastModifiedDate }}
+    DATE: {{ fileInfos.lastModified }}
   </div>
   <h3
     v-if="blocks.length"
@@ -62,12 +62,13 @@
   />
 </template>
 
-<script>
+<script lang="ts">
 import { uint8ToString } from '../util/converters'
 import { Block } from '../classes'
-import BlockCell from './BlockCell'
+import BlockCell from './BlockCell.vue'
+import { defineComponent } from 'vue'
 
-export default {
+export default defineComponent({
   components: {
     BlockCell,
   },
@@ -77,30 +78,39 @@ export default {
       loading: false,
       loadingProgress: 0,
       fileString: '',
-      blocks: [],
+      blocks: [] as Block[],
       unfold: false,
       fileInfos: {
         name: '',
         type: '',
-        size: '',
-        lastModifiedDate: '',
+        size: 0,
+        lastModified: new Date(),
       },
     }
   },
 
   methods: {
-    load ({ target: { files } }) {
+    load (event: Event) {
+      const eventTarget = event.target as HTMLInputElement
+      const { files } = eventTarget
       this.loading = true
+
+      if (!files?.length) {
+        throw new Error('File not found')
+      }
 
       this.fileInfos = {
         name: files[0].name,
         type: files[0].type,
         size: files[0].size,
-        lastModifiedDate: files[0].lastModifiedDate,
+        lastModified: new Date(files[0].lastModified),
       }
 
       const reader = new FileReader()
       reader.onload = ({ target }) => {
+        if (!target?.result || typeof target.result === 'string') {
+          throw new Error('Unreadable file')
+        }
         const uint = new Uint8Array(target.result)
         this.fileString = uint8ToString(uint)
         this.loading = false
@@ -116,9 +126,9 @@ export default {
       reader.readAsArrayBuffer(files[0])
     },
 
-    updateBlocks (blocksToSplice, index) {
+    updateBlocks (blocksToSplice: Block[], index: number) {
       this.blocks.splice(index, 1, ...blocksToSplice)
     },
   },
-}
+})
 </script>

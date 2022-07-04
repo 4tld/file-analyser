@@ -6,8 +6,16 @@
   "extends": [
     "eslint:all",
     "plugin:vue/base",
-    "plugin:vue/vue3-recommended"
+    "plugin:vue/vue3-recommended",
+    "plugin:@typescript-eslint/strict"
   ],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser",
+    "sourceType": "module",
+    "project": ["./tsconfig.json"],
+    "extraFileExtensions": [".vue"]
+  },
   "rules": {
     "array-bracket-spacing": [
       1,
@@ -18,10 +26,14 @@
         "arraysInArrays": false
       }
     ],
+    "@typescript-eslint/no-shadow": 2,
+    "@typescript-eslint/no-unused-vars": 2,
     "array-bracket-newline": [1, "consistent"],
     "array-element-newline": [1, "consistent"],
+    "class-methods-use-this": 0,
     "comma-dangle": [1, "always-multiline"],
     "complexity": 0,
+    "curly": [1, "multi-line"],
     "dot-location": [1, "property"],
     "eqeqeq": 0,
     "func-style": [1, "declaration"],
@@ -50,8 +62,10 @@
     "no-magic-numbers": [0, {"ignoreArrayIndexes": true , "ignore": [0,1]}],
     "no-mixed-operators": 0,
     "no-plusplus": 0,
+    "no-shadow": 0,
     "no-ternary": 0,
     "no-undefined": 0,
+    "no-unused-vars": 0,
     "no-use-before-define": 0,
     "no-warning-comments": 0,
     "object-curly-spacing": [1, "always"],
@@ -97,7 +111,7 @@
     "vue/no-sparse-arrays": 1,
     "vue/no-static-inline-styles": 1,
     "vue/no-template-target-blank": 1,
-    "vue/no-unregistered-components": 1,
+    "vue/no-undef-components": 1,
     "vue/no-unused-properties": 1,
     "vue/no-unused-refs": 1,
     "vue/no-use-computed-property-like-method": 1,

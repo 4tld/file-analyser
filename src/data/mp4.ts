@@ -1,5 +1,6 @@
 import { bigEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
+import { BlockInfoConstruction, ChunkTypes } from '../util/types'
 
 // See: http://mirror.informatimago.com/next/developer.apple.com/documentation/QuickTime/APIREF/INDEX/atomalphaindex.htm
 const mp4ChunkDescriptions = {
@@ -165,14 +166,14 @@ const mp4ChunkDescriptions = {
   wide: 'wide name placeholder',
   WLOC: 'window location',
   wtxt: 'hypertext items parent',
-}
+} as Record<string, string>
 
-export default [
+const mp4: BlockInfoConstruction[] = [
   {
     level: 2,
     pattern: RegExp(String.raw`(?<length>.{4})(?<type>${Object.keys(mp4ChunkDescriptions).join('|')})`, 'su'),
     name: ({ groups }) => `MP4 ${mp4ChunkDescriptions[groups.type]} chunk`,
-    type: 'chunk',
+    type: ChunkTypes.chunk,
     contents: ({ groups, index, input }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
       return input.slice(index, index + 4 + dataLength)
@@ -183,13 +184,13 @@ export default [
         new Block({
           start: index,
           name: 'chunk length',
-          type: 'intbe32',
+          type: ChunkTypes.intbe32,
           contents: groups.length,
         }),
         new Block({
           start: index + 4,
           name: 'chunk type',
-          type: 'ascii',
+          type: ChunkTypes.ascii,
           contents: groups.type,
         }),
       ]
@@ -203,4 +204,5 @@ export default [
       return subBlocks
     },
   },
-].map((info) => new BlockInfo(info))
+]
+export default mp4.map((info) => new BlockInfo(info))
