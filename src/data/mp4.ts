@@ -1,6 +1,7 @@
 import { bigEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
 import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { re } from '../util/regex'
 
 // See: http://mirror.informatimago.com/next/developer.apple.com/documentation/QuickTime/APIREF/INDEX/atomalphaindex.htm
 const mp4ChunkDescriptions = {
@@ -171,34 +172,34 @@ const mp4ChunkDescriptions = {
 const mp4: BlockInfoConstruction[] = [
   {
     level: 2,
-    pattern: RegExp(String.raw`(?<length>.{4})(?<type>${Object.keys(mp4ChunkDescriptions).join('|')})`, 'su'),
+    pattern: re`(?<length>.{4})(?<type>${Object.keys(mp4ChunkDescriptions).join('|')})`,
     name: ({ groups }) => `MP4 ${mp4ChunkDescriptions[groups.type]} chunk`,
     type: ChunkTypes.chunk,
-    contents: ({ groups, index, input }) => {
+    length: ({ groups }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
-      return input.slice(index, index + 4 + dataLength)
+      return 4 + dataLength
     },
-    subBlocks: ({ groups, index, input }) => {
+    subBlocks: ({ groups, index }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
       const subBlocks = [
         new Block({
           start: index,
           name: 'chunk length',
           type: ChunkTypes.intbe32,
-          contents: groups.length,
+          length: 4,
         }),
         new Block({
           start: index + 4,
           name: 'chunk type',
           type: ChunkTypes.ascii,
-          contents: groups.type,
+          length: 4,
         }),
       ]
       if (dataLength > 0) {
         subBlocks.splice(2, 0, new Block({
           start: index + 8,
           name: 'chunk data',
-          contents: input.slice(index + 8, index + 4 + dataLength),
+          length: dataLength - 4,
         }))
       }
       return subBlocks

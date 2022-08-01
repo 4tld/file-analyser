@@ -1,6 +1,7 @@
 import { littleEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
 import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { re } from '../util/regex'
 
 const riffMainChunks = 'RIFF|LIST|JUNK|DISP|PAD |PEAK'
 const riffSubChunks = 'fmt |data|fact|idx1|anih|vedt|bext|id3 '
@@ -14,27 +15,27 @@ const riffFormats = `${riffFileTypes}|${riffListTypes}`
 const riff: BlockInfoConstruction[] = [
   {
     level: 2,
-    pattern: RegExp(String.raw`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`, 'su'),
+    pattern: re`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`,
     name: ({ groups }) => `${groups.format || ''} ${groups.type} container`,
     type: ChunkTypes.chunk,
-    contents: ({ groups, index, input }) => {
+    length: ({ groups }) => {
       const dataLength = littleEndian32StringToNumber(groups.length)
-      return input.slice(index, index + 8 + dataLength)
+      return 8 + dataLength
     },
-    subBlocks: ({ groups, index, input }) => {
+    subBlocks: ({ groups, index }) => {
       const dataLength = littleEndian32StringToNumber(groups.length)
       const subBlocks = [
         new Block({
           start: index,
           name: 'identifier',
           type: ChunkTypes.ascii,
-          contents: groups.type,
+          length: 4,
         }),
         new Block({
           start: index + 4,
           name: 'chunk length',
           type: ChunkTypes.intle32,
-          contents: groups.length,
+          length: 4,
         }),
       ]
       if (dataLength > 0) {
@@ -43,14 +44,14 @@ const riff: BlockInfoConstruction[] = [
             start: index + 8,
             name: 'chunk format',
             type: ChunkTypes.ascii,
-            contents: groups.format,
+            length: 4,
           }))
         }
         const offset = groups.format ? 12 : 8
         subBlocks.push(new Block({
           start: index + offset,
           name: 'chunk data',
-          contents: input.slice(index + offset, index + 8 + dataLength),
+          length: 8 - offset + dataLength,
         }))
       }
       return subBlocks

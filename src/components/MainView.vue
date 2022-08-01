@@ -26,18 +26,18 @@
     />
   </div>
   <h3
-    v-if="fileInfos.name"
+    v-if="file.name"
   >
     File infos:
   </h3>
   <div
-    v-if="fileInfos.name"
+    v-if="file.name"
     class="file-info"
   >
-    NAME: {{ fileInfos.name }}<br />
-    TYPE: {{ fileInfos.type }}<br />
-    SIZE: {{ fileInfos.size }} bytes<br />
-    DATE: {{ fileInfos.lastModified }}
+    NAME: {{ file.name }}<br />
+    TYPE: {{ file.type }}<br />
+    SIZE: {{ file.size }} bytes<br />
+    DATE: {{ file.lastModified }}
   </div>
   <h3
     v-if="blocks.length"
@@ -67,6 +67,8 @@ import { uint8ToString } from '../util/converters'
 import { Block } from '../classes'
 import BlockCell from './BlockCell.vue'
 import { defineComponent } from 'vue'
+import { mapActions, mapWritableState } from 'pinia'
+import { store } from '../store'
 
 export default defineComponent({
   components: {
@@ -77,33 +79,30 @@ export default defineComponent({
     return {
       loading: false,
       loadingProgress: 0,
-      fileString: '',
-      blocks: [] as Block[],
       unfold: false,
-      fileInfos: {
-        name: '',
-        type: '',
-        size: 0,
-        lastModified: new Date(),
-      },
     }
   },
 
+  computed: {
+    ...mapWritableState(store, [ 'file', 'blocks' ]),
+  },
+
   methods: {
+    ...mapActions(store, ['updateBlocks']),
+
     load (event: Event) {
       const eventTarget = event.target as HTMLInputElement
       const { files } = eventTarget
       this.loading = true
 
-      if (!files?.length) {
-        throw new Error('File not found')
-      }
+      if (!files?.length) throw new Error('File not found')
 
-      this.fileInfos = {
+      this.file = {
         name: files[0].name,
         type: files[0].type,
         size: files[0].size,
         lastModified: new Date(files[0].lastModified),
+        contents: '',
       }
 
       const reader = new FileReader()
@@ -112,22 +111,18 @@ export default defineComponent({
           throw new Error('Unreadable file')
         }
         const uint = new Uint8Array(target.result)
-        this.fileString = uint8ToString(uint)
+        this.file.contents = uint8ToString(uint)
         this.loading = false
         this.blocks = [
           new Block(
             {
               name: 'file',
-              contents: this.fileString,
+              length: this.file.contents.length,
             },
           ),
         ]
       }
       reader.readAsArrayBuffer(files[0])
-    },
-
-    updateBlocks (blocksToSplice: Block[], index: number) {
-      this.blocks.splice(index, 1, ...blocksToSplice)
     },
   },
 })
