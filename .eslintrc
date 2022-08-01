@@ -26,6 +26,7 @@
         "arraysInArrays": false
       }
     ],
+    "@typescript-eslint/consistent-type-definitions": [1, "type"],
     "@typescript-eslint/no-shadow": 2,
     "@typescript-eslint/no-unused-vars": 2,
     "array-bracket-newline": [1, "consistent"],

@@ -6,12 +6,16 @@ export class Block {
   name = ''
   type = ChunkTypes.unknown
   description = ''
-  contents = ''
+  length = 0
   subBlocks: Block[] = []
 
   constructor (construction: BlockConstruction) {
     Object.assign(this, construction)
     this.analysed = construction.analysed ?? Boolean(construction.type)
+  }
+
+  get end () {
+    return this.start + this.length - 1
   }
 
   update (props: BlockConstruction) {

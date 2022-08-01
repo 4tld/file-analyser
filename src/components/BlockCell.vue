@@ -4,12 +4,12 @@
   >
     <div class="flex width-50">
       <div class="block-start-end box">
-        {{ block.start }} <br /> {{ block.start + block.contents.length - 1 }}
+        {{ block.start }} <br /> {{ block.end }}
       </div>
       <div>
-        {{ block.name }} ({{ block.contents.length % 1024 ? block.contents.length : `${block.contents.length / 1024} KB` }})<br />
+        {{ block.name }} ({{ block.length % 1024 ? block.length : `${block.length / 1024} KB` }})<br />
         <div v-if="block.type in blockContent">
-          {{ blockContent[block.type as keyof typeof blockContent](block.contents) }}
+          {{ blockContent[block.type as keyof typeof blockContent](file.contents.slice(block.start, block.end + 1)) }}
         </div>
         <div v-if="block.description">
           {{ block.description }}
@@ -60,7 +60,7 @@
           v-if="type.show && type.allow(block.type)"
           class="window"
         >
-          {{ type.content(block.contents) }}
+          {{ type.content(file.contents.slice(block.start, block.end + 1)) }}
         </div>
       </div>
     </div>
@@ -92,6 +92,8 @@ import {
 import { blockInfos } from '../data'
 import { ChunkTypes } from '../util/types'
 import { defineComponent } from 'vue'
+import { mapState } from 'pinia'
+import { store } from '../store'
 
 export default defineComponent({
   name: 'BlockCell',
@@ -121,14 +123,12 @@ export default defineComponent({
           allow: (type: ChunkTypes) => [ ChunkTypes.ascii, ChunkTypes.fixed, ChunkTypes.unknown ].includes(type),
           content: (contents: string) => contents,
         },
-
         {
           name: 'hex',
           show: false,
           allow: () => true,
           content: (contents: string) => stringToHexArray(contents).join('.'),
         },
-
         {
           name: 'binary',
           show: false,
@@ -139,49 +139,51 @@ export default defineComponent({
     }
   },
 
+  computed: {
+    ...mapState(store, ['file']),
+  },
+
   methods: {
     analyseBlock () {
-      const newBlocks = []
-      let blocksToAnalyse = [this.block]
-      for (const blockInfo of this.blockInfos) {
-        const newBTA = blocksToAnalyse
-        let continueAnalyse = true
-        let times = 0
-        while (continueAnalyse && times++ < 10) {
-          continueAnalyse = false
-          for (const blockToAnalyse of blocksToAnalyse) {
-            const blockFound = blockInfo.block(blockToAnalyse)
-            if (blockFound !== false && blockFound.contents) {
-              continueAnalyse = true
-              newBlocks.push(blockFound)
-              const leftBlock = new Block({
-                start: blockToAnalyse.start,
-                name: 'unknown',
-                contents: blockToAnalyse.contents.slice(0, blockFound.start - blockToAnalyse.start),
-              })
-              const rightBlock = new Block({
-                start: blockFound.start + blockFound.contents.length,
-                name: 'unknown',
-                contents: blockToAnalyse.contents.slice(blockFound.start - blockToAnalyse.start + blockFound.contents.length),
-              })
-
-              const blocksToPush = []
-              if (leftBlock.contents.length) {
-                blocksToPush.push(leftBlock)
-              }
-              if (rightBlock.contents.length) {
-                blocksToPush.push(rightBlock)
-              }
-              newBTA.splice(newBTA.findIndex((el) => blockToAnalyse === el), 1, ...blocksToPush)
-            }
-          }
-          blocksToAnalyse = newBTA
-        }
+      this.block.update({ analysed: true })
+      const matches: Block[] = []
+      this.blockInfos.forEach((blockInfo) => {
+        matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end ]))
+      })
+      if (matches.length) {
+        const blocksToSplice = this.findBlocksFromMatches(this.block, matches)
+        this.$emit('updateBlocks', blocksToSplice, this.index)
       }
-      const blocksToSplice = newBlocks.length
-        ? [ ...newBlocks, ...blocksToAnalyse ].sort(({ start: start1 }, { start: start2 }) => start1 - start2)
-        : [this.block.update({ analysed: true })]
-      this.$emit('updateBlocks', blocksToSplice, this.index)
+    },
+
+    findBlocksFromMatches (block: Block, matches: Block[]) {
+      const blocks = []
+      matches.sort((b1, b2) => b1.start - b2.start)
+      let pointer = block.start
+      for (const match of matches) {
+        if (match.start > pointer) {
+          blocks.push(new Block({
+            start: pointer,
+            name: 'unknown',
+            length: match.start - pointer,
+          }))
+          pointer = match.start
+        } else if (match.start < pointer) {
+          // eslint-disable-next-line no-console
+          console.warn('Duplicate block found: ', match)
+          continue
+        }
+        blocks.push(match)
+        pointer += match.length
+      }
+      if (pointer < block.end) {
+        blocks.push(new Block({
+          start: pointer,
+          name: 'unknown',
+          length: block.end + 1 - pointer,
+        }))
+      }
+      return blocks
     },
 
     updateBlocks (blocksToSplice: Block[], index: number) {

@@ -1,24 +1,29 @@
 import { Block } from '../classes'
 
-export enum ChunkTypes { ascii, binary, chunk, fixed, intbe32, intle32, intss32, unknown }
-export type FromRegex<T> = ((match: RegExpMatchArray & { groups: object, index: number, input: string }) => T)
+type FormatMatch = {
+  content: string,
+  groups: Record<string, string>,
+  index: number
+}
 
-export interface BlockConstruction {
+export enum ChunkTypes { unknown, ascii, binary, chunk, fixed, intbe32, intle32, intss32 }
+export type FromRegex<T> = (match: FormatMatch) => T
+
+export type BlockConstruction = {
   analysed?: boolean
   start?: number
   name?: string
   type?: ChunkTypes
   description?: string
-  contents?: string
+  length?: number
   subBlocks?: Block[]
 }
-
-export interface BlockInfoConstruction {
+export type BlockInfoConstruction = {
   level?: number
   pattern: RegExp
   name?: string|FromRegex<string>
   type?: ChunkTypes|FromRegex<ChunkTypes>
   description?: string|FromRegex<string>
-  contents?: string|FromRegex<string>
+  length?: number|FromRegex<number>
   subBlocks?: FromRegex<Block[]>
 }

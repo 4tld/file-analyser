@@ -1,6 +1,7 @@
 import { syncsafe32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
 import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { re } from '../util/regex'
 
 const id3FrameHeaders = {
   AENC: 'Audio encryption',
@@ -99,20 +100,20 @@ const id3FrameHeaders = {
 
 const id3: BlockInfoConstruction[] = [
   {
-    pattern: /TAG.{125}/su,
+    pattern: re`TAG.{125}`,
     name: 'ID3v1 container',
     type: ChunkTypes.fixed,
   },
   {
     level: 1,
-    pattern: /ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})/su,
+    pattern: re`ID3(?<version>[^\xFF]{2})(?<flags>.)(?<length>[\0-\x7F]{4})`,
     name: 'ID3v2 container',
     type: ChunkTypes.chunk,
-    contents: ({ groups, index, input }) => {
+    length: ({ groups }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
-      return input.slice(index, index + 10 + dataLength)
+      return 10 + dataLength
     },
-    subBlocks: ({ groups, index, input }) => {
+    subBlocks: ({ groups, index }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
       const unsynchronisation = (Number(groups.flags) & 0b10000000) > 0
       const extendedHeader = (Number(groups.flags) & 0b01000000) > 0
@@ -123,13 +124,13 @@ const id3: BlockInfoConstruction[] = [
           start: index,
           name: 'ID3v2 magic number',
           type: ChunkTypes.fixed,
-          contents: 'ID3',
+          length: 3,
         }),
         new Block({
           start: index + 3,
           name: `ID3v2 version ${groups.version[0].charCodeAt(0)}.${groups.version[1].charCodeAt(0)}`,
           type: ChunkTypes.fixed,
-          contents: groups.version,
+          length: 2,
         }),
         new Block({
           start: index + 5,
@@ -139,18 +140,18 @@ const id3: BlockInfoConstruction[] = [
                         Extended header: ${extendedHeader ? 'yes' : 'no'} /
                         Experimental: ${experimental ? 'yes' : 'no'} /
                         Footer: ${footer ? 'yes' : 'no'}`,
-          contents: groups.flags,
+          length: 1,
         }),
         new Block({
           start: index + 6,
           name: 'chunk length',
           type: ChunkTypes.intss32,
-          contents: groups.length,
+          length: 4,
         }),
         new Block({
           start: index + 10,
           name: 'chunk data',
-          contents: input.slice(index + 10, index + 10 + dataLength),
+          length: dataLength,
         }),
       ]
     },
@@ -158,36 +159,36 @@ const id3: BlockInfoConstruction[] = [
   {
     name: ({ groups }) => `ID3v2 ${id3FrameHeaders[groups.type]} frame`,
     type: ChunkTypes.chunk,
-    pattern: RegExp(String.raw`(?<type>${Object.keys(id3FrameHeaders).join('|')})(?<length>[\0-\x7F]{4})(?<flags>.{2})`, 'su'),
-    contents: ({ groups, index, input }) => {
+    pattern: re`(?<type>${Object.keys(id3FrameHeaders).join('|')})(?<length>[\0-\x7F]{4})(?<flags>.{2})`,
+    length: ({ groups }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
-      return input.slice(index, index + 10 + dataLength)
+      return 10 + dataLength
     },
-    subBlocks: ({ groups, index, input }) => {
+    subBlocks: ({ groups, index }) => {
       const dataLength = syncsafe32StringToNumber(groups.length)
       return [
         new Block({
           start: index,
           name: `${id3FrameHeaders[groups.type]} frame identifier`,
           type: ChunkTypes.fixed,
-          contents: groups.type,
+          length: 4,
         }),
         new Block({
           start: index + 4,
           name: 'frame length',
           type: ChunkTypes.intss32,
-          contents: groups.length,
+          length: 4,
         }),
         new Block({
           start: index + 8,
           name: 'ID3v2 flags',
           type: ChunkTypes.binary,
-          contents: groups.flags,
+          length: 2,
         }),
         new Block({
           start: index + 10,
           name: 'frame data',
-          contents: input.slice(index + 10, index + 10 + dataLength),
+          length: dataLength,
         }),
       ]
     },
