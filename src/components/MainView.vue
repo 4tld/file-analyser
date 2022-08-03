@@ -114,12 +114,10 @@ export default defineComponent({
         this.file.contents = uint8ToString(uint)
         this.loading = false
         this.blocks = [
-          new Block(
-            {
-              name: 'file',
-              length: this.file.contents.length,
-            },
-          ),
+          new Block({
+            name: 'file',
+            length: this.file.contents.length,
+          }),
         ]
       }
       reader.readAsArrayBuffer(files[0])
