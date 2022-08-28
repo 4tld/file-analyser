@@ -3,6 +3,7 @@ import { BlockConstruction, ChunkTypes } from '../util/types'
 export class Block {
   analysed = false
   start = 0
+  id = ''
   name = ''
   type = ChunkTypes.unknown
   description = ''

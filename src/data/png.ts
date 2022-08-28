@@ -1,8 +1,9 @@
 import { bigEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
-import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { type BlockInfoConstruction, ChunkTypes } from '../util/types'
 import { re } from '../util/regex'
 
+// http://www.libpng.org/pub/png/
 const pngChunkDescriptions = {
   bKGD: 'Background colour',
   cHRM: 'Primary chromaticities',
@@ -29,9 +30,23 @@ const pngChunkDescriptions = {
 
 const png: BlockInfoConstruction[] = [
   {
-    pattern: re`\x89PNG\r\n\cZ\n`,
-    name: 'PNG Magic Number',
+    pattern: re`\x89PNG\r\n\cZ\n.*`,
+    name: 'PNG File',
     type: ChunkTypes.fixed,
+    subBlocks: ({ content: { length }, index }) => [
+      new Block({
+        start: index,
+        name: 'PNG Magic Number',
+        type: ChunkTypes.fixed,
+        length: 8,
+      }),
+      new Block({
+        id: 'PNG',
+        start: index + 8,
+        name: 'PNG Content',
+        length: length - 8,
+      }),
+    ],
   },
   {
     pattern: re`(?<length>.{4})(?<type>${Object.keys(pngChunkDescriptions).join('|')})`,
@@ -41,6 +56,7 @@ const png: BlockInfoConstruction[] = [
       const dataLength = bigEndian32StringToNumber(groups.length)
       return 8 + dataLength + 4
     },
+    context: ['PNG'],
     subBlocks: ({ groups, index }) => {
       const dataLength = bigEndian32StringToNumber(groups.length)
       const subBlocks = [
@@ -65,6 +81,7 @@ const png: BlockInfoConstruction[] = [
       ]
       if (dataLength > 0) {
         subBlocks.splice(2, 0, new Block({
+          id: `PNG:${groups.type}`,
           start: index + 8,
           name: 'chunk data',
           length: dataLength,

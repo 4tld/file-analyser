@@ -148,7 +148,12 @@ export default defineComponent({
       this.block.update({ analysed: true })
       const matches: Block[] = []
       this.blockInfos.forEach((blockInfo) => {
-        matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end ]))
+        if (
+          !blockInfo.context.length ||
+          blockInfo.context.includes(this.block.id)
+        ) {
+          matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end ]))
+        }
       })
       if (matches.length) {
         const blocksToSplice = this.findBlocksFromMatches(this.block, matches)

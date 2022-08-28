@@ -4,7 +4,9 @@ import { Block } from './Block'
 
 export class BlockInfo {
   level = 0
-  pattern: RegExp = re``
+  context: string[] = []
+  pattern = re``
+  id = ''
   name: FromRegex<string> = () => ''
   type: FromRegex<ChunkTypes> = () => ChunkTypes.unknown
   description: FromRegex<string> = () => ''
@@ -27,6 +29,7 @@ export class BlockInfo {
       const matchFormat = { content: match[0], groups: match.groups ?? {}, index: range[0] + Number(match.index) }
       return new Block({
         start: matchFormat.index,
+        id: this.id,
         name: this.name(matchFormat),
         type: this.type(matchFormat),
         description: this.description(matchFormat),

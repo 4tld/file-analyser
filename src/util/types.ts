@@ -12,15 +12,19 @@ export type FromRegex<T> = (match: FormatMatch) => T
 export type BlockConstruction = {
   analysed?: boolean
   start?: number
+  id?: string
   name?: string
   type?: ChunkTypes
   description?: string
   length?: number
   subBlocks?: Block[]
 }
+
 export type BlockInfoConstruction = {
   level?: number
+  context?: string[]
   pattern: RegExp
+  id?: string
   name?: string|FromRegex<string>
   type?: ChunkTypes|FromRegex<ChunkTypes>
   description?: string|FromRegex<string>
