@@ -152,7 +152,7 @@ export default defineComponent({
           !blockInfo.context.length ||
           blockInfo.context.includes(this.block.id)
         ) {
-          matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end ]))
+          matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end + 1 ]))
         }
       })
       if (matches.length) {
