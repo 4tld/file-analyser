@@ -1,6 +1,6 @@
 import { bigEndian32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
-import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { type BlockInfoConstruction, ChunkTypes } from '../util/types'
 import { re } from '../util/regex'
 
 // See: http://mirror.informatimago.com/next/developer.apple.com/documentation/QuickTime/APIREF/INDEX/atomalphaindex.htm

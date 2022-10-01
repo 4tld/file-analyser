@@ -97,6 +97,7 @@ import { store } from '../store'
 
 export default defineComponent({
   name: 'BlockCell',
+  expose: [],
 
   props: {
     block: { type: Block, required: true },

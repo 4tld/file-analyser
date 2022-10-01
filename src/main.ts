@@ -5,7 +5,7 @@ import App from './App.vue'
 import './style/main.css'
 import { router } from './routes'
 
-export const Vue = createApp(App)
-Vue.use(router)
-Vue.use(createPinia())
-Vue.mount('#app')
+export const vue = createApp(App)
+vue.use(router)
+vue.use(createPinia())
+vue.mount('#app')

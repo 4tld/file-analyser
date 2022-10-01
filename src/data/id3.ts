@@ -1,6 +1,6 @@
 import { syncsafe32StringToNumber } from '../util/converters'
 import { Block, BlockInfo } from '../classes'
-import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { type BlockInfoConstruction, ChunkTypes } from '../util/types'
 import { re } from '../util/regex'
 
 const id3FrameHeaders = {

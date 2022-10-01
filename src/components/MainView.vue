@@ -71,9 +71,9 @@ import { mapActions, mapWritableState } from 'pinia'
 import { store } from '../store'
 
 export default defineComponent({
-  components: {
-    BlockCell,
-  },
+  name: 'MainView',
+  expose: [],
+  components: { BlockCell },
 
   data () {
     return {

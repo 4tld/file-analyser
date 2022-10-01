@@ -1,8 +1,8 @@
-import { Block } from '../classes'
+import type { Block } from '../classes'
 
 type FormatMatch = {
-  content: string,
-  groups: Record<string, string>,
+  content: string
+  groups: Record<string, string>
   index: number
 }
 
@@ -25,9 +25,9 @@ export type BlockInfoConstruction = {
   context?: string[]
   pattern: RegExp
   id?: string
-  name?: string|FromRegex<string>
+  name?: FromRegex<string>|string
   type?: ChunkTypes|FromRegex<ChunkTypes>
-  description?: string|FromRegex<string>
-  length?: number|FromRegex<number>
+  description?: FromRegex<string>|string
+  length?: FromRegex<number>|number
   subBlocks?: FromRegex<Block[]>
 }

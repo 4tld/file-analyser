@@ -2,7 +2,7 @@ export function uint8ToString (uint8: Uint8Array) {
   return uint8.reduce((acc, byte) => acc + String.fromCharCode(byte), '')
 }
 export function uint8ToHexString (uint8: Uint8Array) {
-  uint8.reduce((acc, byte) => acc + (0 + byte.toString(16)).slice(-2), '')
+  uint8.reduce((acc, byte) => acc + `0${byte.toString(16)}`.slice(-2), '')
 }
 
 export function stringToBinary (string: string) {
@@ -16,7 +16,7 @@ export function stringToBinary (string: string) {
 export function stringToHexArray (string: string) {
   const hex = []
   for (const char of string) {
-    hex.push((0 + char.charCodeAt(0).toString(16)).slice(-2))
+    hex.push(`0${char.charCodeAt(0).toString(16)}`.slice(-2))
   }
   return hex
 }

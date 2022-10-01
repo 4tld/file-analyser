@@ -1,6 +1,6 @@
 import { BlockInfo } from '../classes'
 import { re } from '../util/regex'
-import { BlockInfoConstruction, ChunkTypes } from '../util/types'
+import { type BlockInfoConstruction, ChunkTypes } from '../util/types'
 
 const magic: BlockInfoConstruction[] = [
   {

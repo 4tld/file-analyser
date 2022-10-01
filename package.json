@@ -5,24 +5,25 @@
   "author": "The Adventure Foretold",
   "type": "module",
   "scripts": {
-    "start": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "start": "vite"
   },
   "dependencies": {
-    "pinia": "^2.0.21",
-    "vue": "^3.2.37",
+    "pinia": "^2.0.22",
+    "vue": "^3.2.40",
     "vue-router": "^4.1.5"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
-    "@vitejs/plugin-vue": "^3.0.3",
-    "eslint": "^8.23.0",
-    "eslint-plugin-vue": "^9.4.0",
-    "typescript": "^4.8.2",
-    "vite": "^3.0.9",
-    "vue-tsc": "^0.40.2"
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "@vitejs/plugin-vue": "^3.1.2",
+    "eslint": "^8.24.0",
+    "eslint-plugin-vue": "^9.6.0",
+    "typescript": "4.8.4",
+    "vite": "^3.1.4",
+    "vue-tsc": "^0.40.13"
   },
   "_id": "4tld-file-analysis@1.0.0",
   "license": "ISC"

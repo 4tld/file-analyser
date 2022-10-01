@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Block } from '../classes'
+import type { Block } from '../classes'
 
 export const store = defineStore('file', {
   state: () => ({
