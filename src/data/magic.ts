@@ -50,12 +50,6 @@ const magic: BlockInfoConstruction[] = [
     type: ChunkTypes.fixed,
   },
   {
-    pattern: re`PK(?<type>\cC\cD|\cE\cF|\cG\cH)`,
-    name: 'ZIP compressed magic number',
-    type: ChunkTypes.fixed,
-    length: 2,
-  },
-  {
     pattern: re`OggS`,
     name: 'OGG magic number',
     type: ChunkTypes.fixed,

@@ -32,7 +32,7 @@ const png: BlockInfoConstruction[] = [
   {
     pattern: re`\x89PNG\r\n\cZ\n.*`,
     name: 'PNG File',
-    type: ChunkTypes.fixed,
+    type: ChunkTypes.chunk,
     subBlocks: ({ content: { length }, index }) => [
       new Block({
         start: index,
