@@ -16,7 +16,7 @@ const riff: BlockInfoConstruction[] = [
   {
     level: 2,
     pattern: re`(?<type>${riffTypes})(?<length>.{4})(?<format>${riffFormats})?`,
-    name: ({ groups }) => `${groups.format || ''} ${groups.type} container`,
+    name: ({ groups }) => `${groups.format} ${groups.type} container`,
     type: ChunkTypes.chunk,
     length: ({ groups }) => {
       const dataLength = littleEndian32StringToNumber(groups.length)

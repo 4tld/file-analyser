@@ -89,7 +89,7 @@ import {
   stringToHexArray,
   syncsafe32StringToNumber,
 } from '../util/converters'
-import { blockInfos } from '../data'
+import blockInfos from '../data'
 import { ChunkTypes } from '../util/types'
 import { defineComponent } from 'vue'
 import { mapState } from 'pinia'

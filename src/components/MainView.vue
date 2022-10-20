@@ -95,7 +95,7 @@ export default defineComponent({
       const { files } = eventTarget
       this.loading = true
 
-      if (!files?.length) throw new Error('File not found')
+      if (!files?.[0]) throw new Error('File not found')
 
       this.file = {
         name: files[0].name,

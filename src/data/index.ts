@@ -6,7 +6,7 @@ import png from './png'
 import riff from './riff'
 import zip from './zip'
 
-export const blockInfos = [
+export default [
   ...deflate,
   ...id3,
   ...magic,
