@@ -13,17 +13,17 @@
   "dependencies": {
     "pinia": "^2.0.23",
     "vue": "^3.2.41",
-    "vue-router": "^4.1.5"
+    "vue-router": "^4.1.6"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
     "@vitejs/plugin-vue": "^3.1.2",
-    "eslint": "^8.25.0",
+    "eslint": "^8.26.0",
     "eslint-plugin-vue": "^9.6.0",
     "typescript": "4.8.4",
     "vite": "^3.1.8",
-    "vue-tsc": "^1.0.8"
+    "vue-tsc": "^1.0.9"
   },
   "_id": "4tld-file-analysis@1.0.0",
   "license": "ISC"
