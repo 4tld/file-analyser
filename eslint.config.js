@@ -99,7 +99,7 @@ const tsRules = {
   'ts/no-this-alias': 1,
   'ts/no-type-alias': 0, // No disabling features
   'ts/no-unnecessary-boolean-literal-compare': 1,
-  'ts/no-unnecessary-condition': 1,
+  'ts/no-unnecessary-condition': 0, // Won't work with forEach, see https://github.com/microsoft/TypeScript/issues/11498
   'ts/no-unnecessary-qualifier': 1,
   'ts/no-unnecessary-type-arguments': 1,
   'ts/no-unnecessary-type-assertion': 1,
@@ -194,6 +194,7 @@ const vueRules = {
   'vue/max-attributes-per-line': 1,
   'vue/multiline-html-element-content-newline': 1,
   'vue/multi-word-component-names': 1,
+  'vue/multiline-ternary': [ 1, 'always-multiline' ],
   'vue/mustache-interpolation-spacing': 1,
   'vue/new-line-between-multi-line-property': 1,
   'vue/next-tick-style': 1,
@@ -246,7 +247,6 @@ const vueRules = {
   'vue/no-potential-component-option-typo': 1,
   'vue/no-ref-as-operand': 1,
   'vue/no-ref-object-destructure': 1,
-  'vue/no-required-prop-with-default': 1,
   'vue/no-reserved-component-names': 1,
   'vue/no-reserved-keys': 1,
   'vue/no-reserved-props': 1,
@@ -336,7 +336,7 @@ const vueRules = {
   'vue/v-bind-style': 1,
   'vue/v-for-delimiter-style': 1,
   'vue/v-on-event-hyphenation': 1,
-  'vue/v-on-function-call': 1,
+  'vue/v-on-handler-style': 0, // Disallow shorter expressions
   'vue/v-on-style': 1,
   'vue/v-slot-style': 1,
   'vue/valid-attribute-name': 1,
@@ -370,7 +370,10 @@ export default [
   { files: [ '**/*.js', '**/*.ts', '**/*.vue' ] },
   {
     languageOptions: {
-      globals: { console: 'readonly' },
+      globals: {
+        console: 'readonly',
+        window: 'readonly',
+      },
       parser: vueParser,
       parserOptions: {
         parser: tsParser,
