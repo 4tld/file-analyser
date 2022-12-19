@@ -16,7 +16,7 @@ export class Block {
   }
 
   public get end () {
-    return this.start + this.length - 1
+    return this.start + this.length
   }
 
   public update (props: BlockConstruction) {

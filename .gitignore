@@ -1,7 +1,10 @@
 node_modules
-/dist
+dist
 .vscode
 *.code-workspace
 
 #Electron-builder output
-/dist_electron
+dist_electron
+
+#c8 coverage
+coverage

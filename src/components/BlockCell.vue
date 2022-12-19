@@ -9,7 +9,7 @@
       <div>
         {{ block.name }} ({{ block.length % 1024 ? block.length : `${block.length / 1024} KB` }})<br />
         <div v-if="block.type in blockContent">
-          {{ blockContent[block.type as keyof typeof blockContent](file.contents.slice(block.start, block.end + 1)) }}
+          {{ blockContent[block.type as keyof typeof blockContent](file.contents.slice(block.start, block.end)) }}
         </div>
         <div v-if="block.description">
           {{ block.description }}
@@ -60,7 +60,7 @@
           v-if="type.show && type.allow(block.type)"
           class="window"
         >
-          {{ type.content(file.contents.slice(block.start, block.end + 1)) }}
+          {{ type.content(file.contents.slice(block.start, block.end)) }}
         </div>
       </div>
     </div>
@@ -153,7 +153,7 @@ export default defineComponent({
           !blockInfo.context.length ||
           blockInfo.context.includes(this.block.id)
         ) {
-          matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end + 1 ]))
+          matches.push(...blockInfo.findMatches(this.file, [ this.block.start, this.block.end ]))
         }
       })
       if (matches.length) {
@@ -182,11 +182,11 @@ export default defineComponent({
         blocks.push(match)
         pointer += match.length
       }
-      if (pointer < block.end) {
+      if (pointer <= block.end) {
         blocks.push(new Block({
           start: pointer,
           name: 'unknown',
-          length: block.end + 1 - pointer,
+          length: block.end - pointer,
         }))
       }
       return blocks
